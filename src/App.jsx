@@ -5,9 +5,16 @@ import {
 } from "react-router-dom";
 
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
-import ProtectedRoute from "./routes/ProtectedRoute";
 import RegisterPage from "./pages/RegisterPage";
+
+import DashboardPage from "./pages/DashboardPage";
+import ProductsPage from "./pages/ProductsPage";
+import SalesPage from "./pages/SalesPage";
+import PurchasesPage from "./pages/PurchasesPage";
+import SuppliersPage from "./pages/SuppliersPage";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
     return (
@@ -17,20 +24,45 @@ function App() {
                     path="/login"
                     element={<LoginPage />}
                 />
+
                 <Route
-                        path="/register"
-                        element={<RegisterPage />}
-                    />
+                    path="/register"
+                    element={<RegisterPage />}
+                />
 
                 <Route
                     path="/"
                     element={
                         <ProtectedRoute>
-                            <DashboardPage />
+                            <DashboardLayout />
                         </ProtectedRoute>
                     }
-                />
-                
+                >
+                    <Route
+                        index
+                        element={<DashboardPage />}
+                    />
+
+                    <Route
+                        path="products"
+                        element={<ProductsPage />}
+                    />
+
+                    <Route
+                        path="sales"
+                        element={<SalesPage />}
+                    />
+
+                    <Route
+                        path="purchases"
+                        element={<PurchasesPage />}
+                    />
+
+                    <Route
+                        path="suppliers"
+                        element={<SuppliersPage />}
+                    />
+                </Route>
             </Routes>
         </BrowserRouter>
     );
