@@ -1,52 +1,72 @@
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import {
+    LayoutDashboard,
+    Package,
+    ShoppingCart,
+    Truck,
+    Users
+} from "lucide-react";
+
+import { NavLink } from "react-router-dom";
 
 function Sidebar() {
-    const { logout } = useAuth();
+    const links = [
+        {
+            name: "Dashboard",
+            path: "/",
+            icon: LayoutDashboard
+        },
+        {
+            name: "Products",
+            path: "/products",
+            icon: Package
+        },
+        {
+            name: "Sales",
+            path: "/sales",
+            icon: ShoppingCart
+        },
+        {
+            name: "Purchases",
+            path: "/purchases",
+            icon: Truck
+        },
+        {
+            name: "Suppliers",
+            path: "/suppliers",
+            icon: Users
+        }
+    ];
 
     return (
-        <aside
-            style={{
-                width: "250px",
-                padding: "20px",
-                borderRight: "1px solid #ddd"
-            }}
-        >
-            <h2>DukaTrack</h2>
+        <aside className="w-64 bg-slate-900 text-white">
+            <div className="h-16 flex items-center px-6 border-b border-slate-700">
+                <h2 className="font-bold text-xl">
+                    DukaTrack
+                </h2>
+            </div>
 
-            <nav
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px"
-                }}
-            >
-                <Link to="/">
-                    Dashboard
-                </Link>
+            <nav className="p-4 space-y-2">
+                {links.map((link) => {
+                    const Icon = link.icon;
 
-                <Link to="/products">
-                    Products
-                </Link>
-
-                <Link to="/sales">
-                    Sales
-                </Link>
-
-                <Link to="/purchases">
-                    Purchases
-                </Link>
-
-                <Link to="/suppliers">
-                    Suppliers
-                </Link>
+                    return (
+                        <NavLink
+                            key={link.path}
+                            to={link.path}
+                            className={({ isActive }) =>
+                                `flex items-center gap-3 p-3 rounded-lg ${
+                                    isActive
+                                        ? "bg-slate-700"
+                                        : "hover:bg-slate-800"
+                                }`
+                            }
+                        >
+                            <Icon size={18} />
+                            {link.name}
+                        </NavLink>
+                    );
+                })}
             </nav>
-
-            <hr />
-
-            <button onClick={logout}>
-                Logout
-            </button>
         </aside>
     );
 }
