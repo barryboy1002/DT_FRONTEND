@@ -30,9 +30,12 @@ function AuthProvider({ children }) {
   }, [token]);
 
 
-  function login(jwtToken) {
-    localStorage.setItem("token", jwtToken);
-    setToken(jwtToken);
+
+
+  function login(token, user) {
+      localStorage.setItem("token", token);
+      setToken(token);
+      setUser(user);
   }
 
   function logout() {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 function RegisterPage() {
@@ -31,12 +31,15 @@ function RegisterPage() {
         setLoading(true);
 
         try {
-            await api.post("/auth/register", formData);
+            await api.post(
+                "/auth/register",
+                formData
+            );
 
             navigate("/login");
-        } catch (err) {
+        } catch (error) {
             setError(
-                err.response?.data?.error ||
+                error.response?.data?.error ||
                 "Registration failed"
             );
         } finally {
@@ -45,106 +48,153 @@ function RegisterPage() {
     }
 
     return (
-        <div>
-            <h1>Create Your Business Account</h1>
+        <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-8">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-slate-900">
+                        DukaTrack
+                    </h1>
 
-            {error && (
-                <p style={{ color: "red" }}>
-                    {error}
-                </p>
-            )}
-
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <input
-                        type="text"
-                        name="businessName"
-                        placeholder="Business Name"
-                        value={formData.businessName}
-                        onChange={handleChange}
-                        required
-                    />
+                    <p className="text-slate-500 mt-2">
+                        Create your business account
+                    </p>
                 </div>
 
-                <div>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Owner Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                {error && (
+                    <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                        {error}
+                    </div>
+                )}
 
-                <div>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email Address"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <input
-                        type="text"
-                        name="phone"
-                        placeholder="Phone Number"
-                        value={formData.phone}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <div>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <select
-                        name="plan"
-                        value={formData.plan}
-                        onChange={handleChange}
-                    >
-                        <option value="free">
-                            Free
-                        </option>
-
-                        <option value="starter">
-                            Starter
-                        </option>
-
-                        <option value="pro">
-                            Pro
-                        </option>
-                    </select>
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4"
                 >
-                    {loading
-                        ? "Creating Account..."
-                        : "Register"}
-                </button>
-            </form>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Business Name
+                        </label>
 
-            <p>
-                Already have an account?{" "}
-                <Link to="/login">
-                    Login
-                </Link>
-            </p>
+                        <input
+                            type="text"
+                            name="businessName"
+                            value={formData.businessName}
+                            onChange={handleChange}
+                            required
+                            placeholder="Barry Electronics"
+                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Owner Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            placeholder="Barry Odoro"
+                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            placeholder="you@example.com"
+                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="text"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            placeholder="0712345678"
+                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            placeholder="••••••••"
+                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Plan
+                        </label>
+
+                        <select
+                            name="plan"
+                            value={formData.plan}
+                            onChange={handleChange}
+                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="free">
+                                Free
+                            </option>
+
+                            <option value="starter">
+                                Starter
+                            </option>
+
+                            <option value="pro">
+                                Pro
+                            </option>
+                        </select>
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition"
+                    >
+                        {loading
+                            ? "Creating Account..."
+                            : "Create Account"}
+                    </button>
+                </form>
+
+                <div className="mt-6 text-center text-sm text-slate-600">
+                    Already have an account?{" "}
+                    <Link
+                        to="/login"
+                        className="text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                        Sign In
+                    </Link>
+                </div>
+            </div>
         </div>
     );
 }
