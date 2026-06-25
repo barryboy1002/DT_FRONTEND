@@ -13,6 +13,7 @@ import SalesPage from "./pages/SalesPage";
 import SalesHistoryPage from "./pages/SalesHistoryPage";
 import PurchasesPage from "./pages/PurchasesPage";
 import SuppliersPage from "./pages/SuppliersPage";
+import ReportsPage from "./pages/ReportsPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -67,6 +68,11 @@ function App() {
                     <Route
                         path="suppliers"
                         element={<SuppliersPage />}
+                    />
+
+                    <Route
+                        path="reports"
+                        element={<ReportsPage />}
                     />
                 </Route>
             </Routes>

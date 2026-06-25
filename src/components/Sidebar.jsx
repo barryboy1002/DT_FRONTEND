@@ -4,7 +4,8 @@ import {
     ShoppingCart,
     Truck,
     Users,
-    History
+    History,
+    FileText
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -40,6 +41,11 @@ function Sidebar() {
             name: "Suppliers",
             path: "/suppliers",
             icon: Users
+        },
+        {
+            name: "Reports",
+            path: "/reports",
+            icon: FileText
         }
     ];
 

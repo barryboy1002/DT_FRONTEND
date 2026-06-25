@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Scan, Plus, Trash2, Smartphone, Banknote, Check, AlertTriangle, X, ShoppingCart, Percent } from "lucide-react";
 import { getProducts } from "../api/productsApi";
 import { createSale } from "../api/salesApi";
+import BarcodeScanner from "../components/BarcodeScanner";
 
 function SalesPage() {
     const [products, setProducts] = useState([]);
@@ -42,14 +43,16 @@ function SalesPage() {
         return () => clearTimeout(handler);
     }, [search]);
 
-    // Reload products when debounced search term changes
+    // Load initial data and reload when debounced search term changes
     useEffect(() => {
         loadData(debouncedSearch);
     }, [debouncedSearch]);
 
     const addToCart = (product) => {
         setErrorMsg("");
-        setSaleSuccess(null);
+        if (saleSuccess) {
+            setSaleSuccess(null);
+        }
         
         // Check if item is already in cart
         const existingItem = cart.find(item => item.product_id === product.product_id);
@@ -74,6 +77,9 @@ function SalesPage() {
 
     const updateCartQuantity = (productId, qty) => {
         setErrorMsg("");
+        if (saleSuccess) {
+            setSaleSuccess(null);
+        }
         if (qty <= 0) {
             removeFromCart(productId);
             return;
@@ -132,9 +138,9 @@ function SalesPage() {
             
             const res = await createSale(payload);
             setSaleSuccess(res.data);
-            clearCart();
-            // Refresh products to show updated stock values
+            // Refresh products to show updated stock values before clearing cart
             await loadData(debouncedSearch);
+            clearCart();
         } catch (err) {
             console.error(err);
             setErrorMsg(err.response?.data?.error || "Failed to complete sale.");
@@ -201,7 +207,28 @@ function SalesPage() {
                                 type="text"
                                 placeholder="Search product or scan barcode..."
                                 value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setSearch(value);
+                                    // Auto-add to cart if exact barcode match found
+                                    if (value.length > 3) {
+                                        const matchedProduct = products.find(p => p.barcode && p.barcode === value);
+                                        if (matchedProduct) {
+                                            addToCart(matchedProduct);
+                                            setSearch("");
+                                        }
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    // Handle Enter key for barcode scanners
+                                    if (e.key === 'Enter' && search.trim()) {
+                                        const matchedProduct = products.find(p => p.barcode && p.barcode === search.trim());
+                                        if (matchedProduct) {
+                                            addToCart(matchedProduct);
+                                            setSearch("");
+                                        }
+                                    }
+                                }}
                                 className="w-full bg-transparent border-none outline-none text-gray-900 placeholder-gray-400 focus:ring-0 text-sm"
                             />
                             {search && (
@@ -441,54 +468,21 @@ function SalesPage() {
 
             </div>
 
-            {/* Simulated Scanner Modal */}
+            {/* Barcode Scanner */}
             {showScanModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
-                    <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md overflow-hidden shadow-xl text-gray-900">
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <h3 className="font-semibold text-lg text-gray-900 flex items-center gap-2">
-                                <Scan className="h-5 w-5 text-blue-600" />
-                                <span>Scan Barcode Simulation</span>
-                            </h3>
-                            <button
-                                onClick={() => setShowScanModal(false)}
-                                className="text-gray-400 hover:text-gray-650 transition-colors cursor-pointer"
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <p className="text-sm text-gray-550 mb-4">
-                                Click on any product below to simulate scanning its barcode with a hardware or camera scanner.
-                            </p>
-                            <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1">
-                                {products.filter(p => p.barcode).map(p => (
-                                    <button
-                                        key={p.product_id}
-                                        onClick={() => {
-                                            addToCart(p);
-                                            setShowScanModal(false);
-                                        }}
-                                        className="w-full text-left p-3.5 hover:bg-gray-50 rounded-xl border border-gray-200 flex justify-between items-center transition-all hover:border-gray-300 cursor-pointer"
-                                    >
-                                        <div>
-                                            <span className="font-semibold block text-gray-900 text-sm">{p.name}</span>
-                                            <span className="text-xs text-gray-500 font-mono">Barcode: {p.barcode}</span>
-                                        </div>
-                                        <span className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full font-bold border border-blue-100">
-                                            Scan
-                                        </span>
-                                    </button>
-                                ))}
-                                {products.filter(p => p.barcode).length === 0 && (
-                                    <div className="text-center py-8 text-gray-400">
-                                        No products have barcodes registered.
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <BarcodeScanner
+                    onScan={(barcode) => {
+                        const matchedProduct = products.find(p => p.barcode && p.barcode === barcode);
+                        if (matchedProduct) {
+                            addToCart(matchedProduct);
+                            setShowScanModal(false);
+                        } else {
+                            setErrorMsg(`No product found with barcode: ${barcode}`);
+                            setShowScanModal(false);
+                        }
+                    }}
+                    onClose={() => setShowScanModal(false)}
+                />
             )}
 
         </div>
