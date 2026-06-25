@@ -8,3 +8,8 @@ export async function getRecentSales(){
 
     return response.data;
 }
+
+export async function createSale(saleData) {
+    const response = await api.post("/sales", saleData);
+    return response.data;
+}

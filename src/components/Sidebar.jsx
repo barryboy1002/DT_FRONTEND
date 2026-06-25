@@ -21,7 +21,7 @@ function Sidebar() {
             icon: Package
         },
         {
-            name: "Sales",
+            name: "New Sale",
             path: "/sales",
             icon: ShoppingCart
         },
