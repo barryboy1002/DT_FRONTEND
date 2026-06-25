@@ -3,7 +3,8 @@ import {
     Package,
     ShoppingCart,
     Truck,
-    Users
+    Users,
+    History
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -24,6 +25,11 @@ function Sidebar() {
             name: "New Sale",
             path: "/sales",
             icon: ShoppingCart
+        },
+        {
+            name: "Sales History",
+            path: "/sales-history",
+            icon: History
         },
         {
             name: "Purchases",

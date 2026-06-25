@@ -10,6 +10,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProductsPage from "./pages/ProductsPage";
 import SalesPage from "./pages/SalesPage";
+import SalesHistoryPage from "./pages/SalesHistoryPage";
 import PurchasesPage from "./pages/PurchasesPage";
 import SuppliersPage from "./pages/SuppliersPage";
 
@@ -51,6 +52,11 @@ function App() {
                     <Route
                         path="sales"
                         element={<SalesPage />}
+                    />
+
+                    <Route
+                        path="sales-history"
+                        element={<SalesHistoryPage />}
                     />
 
                     <Route

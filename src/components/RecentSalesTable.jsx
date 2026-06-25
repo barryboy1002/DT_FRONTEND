@@ -51,7 +51,7 @@ function RecentSalesTable({
                             </td>
 
                             <td>
-                                KES {sale.total_amount}
+                                KES {Number(sale.total || 0).toLocaleString()}
                             </td>
 
                             <td>
