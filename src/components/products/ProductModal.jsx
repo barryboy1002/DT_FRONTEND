@@ -1,0 +1,455 @@
+import { useEffect, useState } from "react";
+
+function ProductModal({
+    isOpen,
+    onClose,
+    onSubmit,
+    categories,
+    product = null
+}) {
+
+    const [formData, setFormData] =
+        useState({
+            name: "",
+            category_id: "",
+            barcode: "",
+            buying_price: "",
+            selling_price: "",
+            brand: "",
+            unit: "",
+            low_stock_threshhold: 10,
+            description: ""
+        });
+
+    useEffect(() => {
+
+        if (product) {
+
+            setFormData({
+                name:
+                    product.name || "",
+
+                category_id:
+                    product.category_id || "",
+
+                barcode:
+                    product.barcode || "",
+
+                buying_price:
+                    product.buying_price || "",
+
+                selling_price:
+                    product.selling_price || "",
+
+                brand:
+                    product.brand || "",
+
+                unit:
+                    product.unit || "",
+
+                low_stock_threshhold:
+                    product.low_stock_threshhold || 10,
+
+                description:
+                    product.description || ""
+            });
+
+        } else {
+
+            setFormData({
+                name: "",
+                category_id: "",
+                barcode: "",
+                buying_price: "",
+                selling_price: "",
+                brand: "",
+                unit: "",
+                low_stock_threshhold: 10,
+                description: ""
+            });
+
+        }
+
+    }, [product]);
+
+    function handleChange(e) {
+
+        const {
+            name,
+            value
+        } = e.target;
+
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+
+    }
+
+    async function handleSubmit(e) {
+
+        e.preventDefault();
+
+        await onSubmit({
+            ...formData,
+            buying_price:
+                Number(
+                    formData.buying_price
+                ),
+
+            selling_price:
+                Number(
+                    formData.selling_price
+                ),
+
+            low_stock_threshhold:
+                Number(
+                    formData.low_stock_threshhold
+                )
+        });
+
+    }
+
+    if (!isOpen) return null;
+
+    return (
+        <div
+            className="
+            fixed inset-0
+            bg-black/50
+            flex items-center
+            justify-center
+            z-50
+            "
+        >
+
+            <div
+                className="
+                bg-white
+                rounded-xl
+                shadow-xl
+                w-full
+                max-w-3xl
+                max-h-[90vh]
+                overflow-y-auto
+                "
+            >
+
+                <div
+                    className="
+                    flex
+                    justify-between
+                    items-center
+                    p-6
+                    border-b
+                    "
+                >
+
+                    <h2
+                        className="
+                        text-xl
+                        font-semibold
+                        "
+                    >
+                        {product
+                            ? "Edit Product"
+                            : "Add Product"}
+                    </h2>
+
+                    <button
+                        onClick={onClose}
+                        className="
+                        text-gray-500
+                        hover:text-gray-700
+                        "
+                    >
+                        ✕
+                    </button>
+
+                </div>
+
+                <form
+                    onSubmit={
+                        handleSubmit
+                    }
+                    className="
+                    p-6
+                    space-y-5
+                    "
+                >
+
+                    <div
+                        className="
+                        grid
+                        grid-cols-1
+                        md:grid-cols-2
+                        gap-4
+                        "
+                    >
+
+                        <div>
+
+                            <label
+                                className="
+                                block
+                                mb-2
+                                text-sm
+                                font-medium
+                                "
+                            >
+                                Product Name
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                value={
+                                    formData.name
+                                }
+                                onChange={
+                                    handleChange
+                                }
+                                required
+                                className="
+                                w-full
+                                border
+                                rounded-lg
+                                px-4
+                                py-2
+                                "
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label
+                                className="
+                                block
+                                mb-2
+                                text-sm
+                                font-medium
+                                "
+                            >
+                                Category
+                            </label>
+
+                            <select
+                                name="category_id"
+                                value={
+                                    formData.category_id
+                                }
+                                onChange={
+                                    handleChange
+                                }
+                                className="
+                                w-full
+                                border
+                                rounded-lg
+                                px-4
+                                py-2
+                                "
+                            >
+
+                                <option value="">
+                                    Select Category
+                                </option>
+
+                                {
+                                    categories.map(
+                                        category => (
+                                            <option
+                                                key={
+                                                    category.category_id
+                                                }
+                                                value={
+                                                    category.category_id
+                                                }
+                                            >
+                                                {
+                                                    category.name
+                                                }
+                                            </option>
+                                        )
+                                    )
+                                }
+
+                            </select>
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+                                Buying Price
+                            </label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="buying_price"
+                                value={formData.buying_price}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg px-4 py-2"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+                                Selling Price
+                            </label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="selling_price"
+                                value={formData.selling_price}
+                                onChange={handleChange}
+                                required
+                                className="w-full border rounded-lg px-4 py-2"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+                                Brand
+                            </label>
+
+                            <input
+                                type="text"
+                                name="brand"
+                                value={formData.brand}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg px-4 py-2"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+                                Unit
+                            </label>
+
+                            <input
+                                type="text"
+                                name="unit"
+                                value={formData.unit}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg px-4 py-2"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+                                Barcode
+                            </label>
+
+                            <input
+                                type="text"
+                                name="barcode"
+                                value={formData.barcode}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg px-4 py-2"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium">
+                                Low Stock Threshold
+                            </label>
+
+                            <input
+                                type="number"
+                                name="low_stock_threshhold"
+                                value={formData.low_stock_threshhold}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg px-4 py-2"
+                            />
+
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <label className="block mb-2 text-sm font-medium">
+                            Description
+                        </label>
+
+                        <textarea
+                            rows="4"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            className="
+                            w-full
+                            border
+                            rounded-lg
+                            px-4
+                            py-2
+                            "
+                        />
+
+                    </div>
+
+                    <div
+                        className="
+                        flex
+                        justify-end
+                        gap-3
+                        pt-4
+                        "
+                    >
+
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="
+                            px-4
+                            py-2
+                            border
+                            rounded-lg
+                            "
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            className="
+                            px-5
+                            py-2
+                            bg-green-600
+                            text-white
+                            rounded-lg
+                            hover:bg-green-700
+                            "
+                        >
+                            {
+                                product
+                                    ? "Update Product"
+                                    : "Create Product"
+                            }
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    );
+}
+
+export default ProductModal;
