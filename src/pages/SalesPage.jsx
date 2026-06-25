@@ -144,26 +144,27 @@ function SalesPage() {
     };
 
     return (
-        <div className="-m-6 bg-slate-900 text-white min-h-[calc(100vh-4rem)] p-6 flex flex-col gap-6">
+        <div className="space-y-6 max-w-[1440px] mx-auto text-gray-900">
             
             {/* Header Area */}
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-white tracking-tight">New Sale</h1>
+            <div>
+                <h1 className="text-3xl font-bold tracking-tight text-gray-900">New Sale</h1>
+                <p className="text-gray-500 mt-1">Create new sale transaction and record POS activity</p>
             </div>
 
-            {/* Notification Banner Overlay */}
+            {/* Notification Banners */}
             {saleSuccess && (
-                <div className="bg-emerald-950 border border-emerald-800 text-emerald-200 p-4 rounded-xl flex items-start gap-3 relative animate-slide-in shadow-lg">
-                    <Check className="h-5 w-5 text-emerald-400 mt-0.5 shrink-0" />
+                <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-start gap-3 relative shadow-sm">
+                    <Check className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
                     <div>
                         <h4 className="font-bold text-sm">Sale Completed Successfully!</h4>
-                        <p className="text-xs mt-1 text-emerald-300">
-                            Receipt Number: <span className="font-mono font-bold bg-emerald-900 px-1.5 py-0.5 rounded text-emerald-100">{saleSuccess.receipt_number}</span>
+                        <p className="text-xs mt-1 text-green-700">
+                            Receipt Number: <span className="font-mono font-bold bg-green-100 px-1.5 py-0.5 rounded text-green-800">{saleSuccess.receipt_number}</span>
                         </p>
                     </div>
                     <button
                         onClick={() => setSaleSuccess(null)}
-                        className="absolute top-4 right-4 text-emerald-400 hover:text-emerald-200 cursor-pointer"
+                        className="absolute top-4 right-4 text-green-600 hover:text-green-800 cursor-pointer"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -171,37 +172,37 @@ function SalesPage() {
             )}
 
             {errorMsg && (
-                <div className="bg-rose-950 border border-rose-800 text-rose-200 p-4 rounded-xl flex items-start gap-3 relative animate-slide-in shadow-lg">
-                    <AlertTriangle className="h-5 w-5 text-rose-400 mt-0.5 shrink-0" />
+                <div className="bg-red-50 border border-red-200 text-red-850 p-4 rounded-xl flex items-start gap-3 relative shadow-sm">
+                    <AlertTriangle className="h-5 w-5 text-red-650 mt-0.5 shrink-0" />
                     <div>
                         <h4 className="font-bold text-sm">Action Failed</h4>
-                        <p className="text-xs mt-1 text-rose-300">{errorMsg}</p>
+                        <p className="text-xs mt-1 text-red-700">{errorMsg}</p>
                     </div>
                     <button
                         onClick={() => setErrorMsg("")}
-                        className="absolute top-4 right-4 text-rose-400 hover:text-rose-200 cursor-pointer"
+                        className="absolute top-4 right-4 text-red-600 hover:text-red-800 cursor-pointer"
                     >
                         <X className="h-4 w-4" />
                     </button>
                 </div>
             )}
 
-            {/* Two-Column Workspace */}
+            {/* Two-Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 
                 {/* Left Side: Product Browsing & Search */}
                 <div className="lg:col-span-2 space-y-4">
                     
                     {/* Search & Scan Action Bar */}
-                    <div className="flex gap-4 items-center">
-                        <div className="flex-1 flex items-center bg-white rounded-lg shadow px-4 py-2.5 border border-gray-200">
+                    <div className="flex gap-3 items-center">
+                        <div className="flex-1 flex items-center bg-white rounded-lg px-3 py-2 border border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 h-[42px]">
                             <Search className="text-gray-400 mr-2 h-5 w-5" />
                             <input
                                 type="text"
                                 placeholder="Search product or scan barcode..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full bg-transparent border-none outline-none text-gray-800 placeholder-gray-400 focus:ring-0 text-sm"
+                                className="w-full bg-transparent border-none outline-none text-gray-900 placeholder-gray-400 focus:ring-0 text-sm"
                             />
                             {search && (
                                 <button
@@ -214,16 +215,16 @@ function SalesPage() {
                         </div>
                         <button
                             onClick={() => setShowScanModal(true)}
-                            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-lg border border-slate-700 transition-all font-semibold text-sm cursor-pointer shadow-sm hover:shadow"
+                            className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg border border-gray-300 transition-colors font-semibold text-sm cursor-pointer h-[42px] shadow-sm"
                         >
-                            <Scan className="h-4 w-4" />
-                            <span>Scan</span>
+                            <Scan className="h-4 w-4 text-gray-500" />
+                            <span>Scan Barcode</span>
                         </button>
                     </div>
 
                     {/* Products Grid list */}
                     {loading ? (
-                        <div className="text-center py-12 text-gray-400 bg-slate-800/50 rounded-xl border border-slate-800">
+                        <div className="text-center py-12 text-gray-400 bg-white rounded-xl border border-gray-200">
                             <p>Loading products...</p>
                         </div>
                     ) : (
@@ -231,45 +232,49 @@ function SalesPage() {
                             {products.map(product => {
                                 const unitStr = product.unit || "pcs";
                                 const isLowStock = Number(product.stock_quantity) <= Number(product.low_stock_threshhold);
+                                const isOutOfStock = Number(product.stock_quantity) <= 0;
                                 
                                 return (
-                                    <div key={product.product_id} className="bg-white rounded-xl p-4 flex justify-between items-center shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                                    <div key={product.product_id} className="bg-white rounded-xl p-4 flex justify-between items-center border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
                                         <div>
                                             <h3 className="font-bold text-gray-900 text-base">{product.name}</h3>
                                             <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
                                                 <span>{product.category_name || "Uncategorized"}</span>
                                                 <span>•</span>
-                                                <span className={isLowStock ? "text-rose-600 font-bold flex items-center gap-1.5" : "text-gray-500"}>
-                                                    {product.stock_quantity} {unitStr} left
-                                                    {isLowStock && (
-                                                        <span className="bg-rose-50 text-rose-600 text-xxs px-1.5 py-0.5 rounded font-bold border border-rose-100">
-                                                            ⚠️ Low
-                                                        </span>
-                                                    )}
-                                                </span>
+                                                {isOutOfStock ? (
+                                                    <span className="text-red-650 font-bold">Out of stock</span>
+                                                ) : (
+                                                    <span className={isLowStock ? "text-amber-600 font-bold flex items-center gap-1.5" : "text-gray-500"}>
+                                                        {product.stock_quantity} {unitStr} left
+                                                        {isLowStock && (
+                                                            <span className="bg-amber-50 text-amber-700 text-xxs px-1.5 py-0.5 rounded font-bold border border-amber-200">
+                                                                Low Stock
+                                                            </span>
+                                                        )}
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-green-600 font-black text-lg">KSh {product.selling_price}</span>
+                                            <span className="text-gray-900 font-bold text-base">KES {product.selling_price}</span>
                                             <button
                                                 onClick={() => addToCart(product)}
-                                                disabled={Number(product.stock_quantity) <= 0}
-                                                className={`px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-1 cursor-pointer ${
-                                                    Number(product.stock_quantity) <= 0
-                                                        ? "bg-gray-105 text-gray-400 cursor-not-allowed border border-gray-200"
-                                                        : "bg-green-600 hover:bg-green-700 text-white shadow-sm hover:shadow-md"
+                                                disabled={isOutOfStock}
+                                                className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors cursor-pointer ${
+                                                    isOutOfStock
+                                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                                                        : "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm"
                                                 }`}
                                             >
-                                                <Plus className="h-4 w-4" />
-                                                <span>Add</span>
+                                                Add
                                             </button>
                                         </div>
                                     </div>
                                 );
                             })}
                             {products.length === 0 && (
-                                <div className="text-center py-12 bg-slate-800/40 rounded-xl border border-slate-800">
-                                    <p className="text-gray-400">No products found matching the criteria.</p>
+                                <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+                                    <p className="text-gray-500 font-medium">No products found matching the criteria.</p>
                                 </div>
                             )}
                         </div>
@@ -277,16 +282,16 @@ function SalesPage() {
                 </div>
 
                 {/* Right Side: Current Sale Cart */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-gray-800 flex flex-col gap-6">
-                    <div className="flex justify-between items-center border-b pb-4">
-                        <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                            <ShoppingCart className="h-5 w-5 text-gray-600" />
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-gray-900 flex flex-col gap-6">
+                    <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                        <h2 className="font-semibold text-lg text-gray-900 flex items-center gap-2">
+                            <ShoppingCart className="h-5 w-5 text-gray-500" />
                             <span>Current Sale</span>
                         </h2>
                         {cart.length > 0 && (
                             <button
                                 onClick={clearCart}
-                                className="text-red-500 hover:text-red-700 text-sm font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                                className="text-red-600 hover:text-red-700 text-sm font-semibold cursor-pointer"
                             >
                                 Clear
                             </button>
@@ -294,35 +299,35 @@ function SalesPage() {
                     </div>
 
                     {/* Cart Items List */}
-                    <div className="flex-1 overflow-y-auto max-h-[300px] min-h-[120px] space-y-3 pr-1">
+                    <div className="flex-1 overflow-y-auto max-h-[300px] min-h-[120px] space-y-3">
                         {cart.map(item => (
-                            <div key={item.product_id} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
+                            <div key={item.product_id} className="flex justify-between items-center py-2.5 border-b border-gray-100 last:border-0">
                                 <div className="flex-1 pr-2">
-                                    <h4 className="font-bold text-gray-800 text-sm line-clamp-1">{item.name}</h4>
-                                    <span className="text-gray-500 text-xs">KSh {item.selling_price} each</span>
+                                    <h4 className="font-semibold text-gray-805 text-sm line-clamp-1">{item.name}</h4>
+                                    <span className="text-gray-500 text-xs">KES {item.selling_price} each</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                                    <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-gray-50 h-8">
                                         <button
                                             onClick={() => updateCartQuantity(item.product_id, item.quantity - 1)}
-                                            className="px-2 py-1 hover:bg-gray-200 text-gray-600 font-bold transition-colors cursor-pointer"
+                                            className="px-2 py-0.5 hover:bg-gray-200 text-gray-600 font-bold transition-colors cursor-pointer"
                                         >
                                             -
                                         </button>
                                         <span className="px-2 text-xs font-semibold text-gray-800">{item.quantity}</span>
                                         <button
                                             onClick={() => updateCartQuantity(item.product_id, item.quantity + 1)}
-                                            className="px-2 py-1 hover:bg-gray-200 text-gray-600 font-bold transition-colors cursor-pointer"
+                                            className="px-2 py-0.5 hover:bg-gray-200 text-gray-600 font-bold transition-colors cursor-pointer"
                                         >
                                             +
                                         </button>
                                     </div>
-                                    <span className="font-bold text-gray-800 text-sm min-w-[70px] text-right">
-                                        KSh {Number(item.selling_price) * item.quantity}
+                                    <span className="font-bold text-gray-900 text-sm min-w-[70px] text-right">
+                                        KES {Number(item.selling_price) * item.quantity}
                                     </span>
                                     <button
                                         onClick={() => removeFromCart(item.product_id)}
-                                        className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                                        className="text-gray-400 hover:text-red-650 transition-colors cursor-pointer"
                                     >
                                         <X className="h-4 w-4" />
                                     </button>
@@ -330,9 +335,9 @@ function SalesPage() {
                             </div>
                         ))}
                         {cart.length === 0 && (
-                            <div className="text-center py-10 text-gray-400 border border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col justify-center items-center">
+                            <div className="text-center py-10 text-gray-400 border border-dashed border-gray-200 rounded-lg bg-gray-50 flex flex-col justify-center items-center">
                                 <ShoppingCart className="h-8 w-8 text-gray-300 mb-2" />
-                                <p className="text-sm">Cart is empty</p>
+                                <p className="text-sm">No items in cart</p>
                             </div>
                         )}
                     </div>
@@ -341,12 +346,12 @@ function SalesPage() {
                     <div className="space-y-4 pt-4 border-t border-gray-100">
                         <div className="flex justify-between items-center text-sm text-gray-600">
                             <span>Subtotal</span>
-                            <span className="font-semibold text-gray-800">KSh {subtotal}</span>
+                            <span className="font-semibold text-gray-800">KES {subtotal}</span>
                         </div>
                         
                         <div className="flex justify-between items-center text-sm text-gray-600">
                             <span>Discount</span>
-                            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50 px-2 py-1">
+                            <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-gray-50 px-2 py-1 h-8">
                                 <input
                                     type="number"
                                     min="0"
@@ -356,7 +361,7 @@ function SalesPage() {
                                         const val = Math.min(100, Math.max(0, Number(e.target.value) || 0));
                                         setDiscount(val);
                                     }}
-                                    className="w-12 text-right bg-transparent border-none outline-none text-sm text-gray-800 focus:ring-0 font-semibold"
+                                    className="w-10 text-right bg-transparent border-none outline-none text-sm text-gray-850 focus:ring-0 font-semibold"
                                     placeholder="0"
                                 />
                                 <Percent className="h-3.5 w-3.5 text-gray-400 ml-1" />
@@ -365,21 +370,21 @@ function SalesPage() {
                         
                         <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                             <span className="font-bold text-base text-gray-900">Total</span>
-                            <span className="font-black text-xl text-gray-900">KSh {total}</span>
+                            <span className="font-bold text-lg text-gray-900">KES {total}</span>
                         </div>
                     </div>
 
                     {/* Payment Method Selector */}
-                    <div className="space-y-3">
-                        <label className="text-xs font-bold text-gray-500 tracking-wider uppercase">Payment Method</label>
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-gray-500 tracking-wider uppercase">Payment Method</label>
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 type="button"
                                 onClick={() => setPaymentMethod("cash")}
-                                className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border font-semibold text-sm transition-all cursor-pointer ${
+                                className={`flex items-center justify-center gap-2 py-2 rounded-lg border font-semibold text-sm transition-all cursor-pointer h-10 ${
                                     paymentMethod === "cash"
-                                        ? "bg-green-50 border-green-500 text-green-700 shadow-sm"
-                                        : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                                        ? "bg-blue-50 border-blue-600 text-blue-700 shadow-sm"
+                                        : "border-gray-300 text-gray-700 hover:bg-gray-50 bg-white"
                                 }`}
                             >
                                 <Banknote className="h-4 w-4" />
@@ -388,10 +393,10 @@ function SalesPage() {
                             <button
                                 type="button"
                                 onClick={() => setPaymentMethod("mpesa")}
-                                className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border font-semibold text-sm transition-all cursor-pointer ${
+                                className={`flex items-center justify-center gap-2 py-2 rounded-lg border font-semibold text-sm transition-all cursor-pointer h-10 ${
                                     paymentMethod === "mpesa"
-                                        ? "bg-green-50 border-green-500 text-green-700 shadow-sm"
-                                        : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                                        ? "bg-blue-50 border-blue-600 text-blue-700 shadow-sm"
+                                        : "border-gray-300 text-gray-700 hover:bg-gray-50 bg-white"
                                 }`}
                             >
                                 <Smartphone className="h-4 w-4" />
@@ -402,13 +407,13 @@ function SalesPage() {
 
                     {/* Customer Name */}
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-500 tracking-wider uppercase">Customer Name (Optional)</label>
+                        <label className="text-xs font-semibold text-gray-500 tracking-wider uppercase">Customer Name (Optional)</label>
                         <input
                             type="text"
                             placeholder="Walk-in customer"
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-green-500 transition-colors"
+                            className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-950 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-10"
                         />
                     </div>
 
@@ -417,10 +422,10 @@ function SalesPage() {
                         type="button"
                         onClick={handleCompleteSale}
                         disabled={cart.length === 0 || isCompleting}
-                        className={`w-full py-3.5 rounded-lg font-bold text-base transition-all flex items-center justify-center gap-2 shadow-sm ${
+                        className={`w-full py-3 rounded-lg font-bold text-base transition-colors flex items-center justify-center gap-2 ${
                             cart.length === 0 || isCompleting
                                 ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
-                                : "bg-green-650 hover:bg-green-700 text-white hover:shadow-md cursor-pointer"
+                                : "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm hover:shadow"
                         }`}
                     >
                         {isCompleting ? (
@@ -438,22 +443,22 @@ function SalesPage() {
 
             {/* Simulated Scanner Modal */}
             {showScanModal && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl text-white">
-                        <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-                            <h3 className="font-bold text-lg text-white flex items-center gap-2">
-                                <Scan className="h-5 w-5 text-green-400" />
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+                    <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md overflow-hidden shadow-xl text-gray-900">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <h3 className="font-semibold text-lg text-gray-900 flex items-center gap-2">
+                                <Scan className="h-5 w-5 text-blue-600" />
                                 <span>Scan Barcode Simulation</span>
                             </h3>
                             <button
                                 onClick={() => setShowScanModal(false)}
-                                className="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                className="text-gray-400 hover:text-gray-650 transition-colors cursor-pointer"
                             >
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
                         <div className="p-6">
-                            <p className="text-sm text-gray-400 mb-4">
+                            <p className="text-sm text-gray-550 mb-4">
                                 Click on any product below to simulate scanning its barcode with a hardware or camera scanner.
                             </p>
                             <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1">
@@ -464,19 +469,19 @@ function SalesPage() {
                                             addToCart(p);
                                             setShowScanModal(false);
                                         }}
-                                        className="w-full text-left p-3.5 hover:bg-slate-800 rounded-xl border border-slate-800 flex justify-between items-center transition-all hover:border-slate-700 cursor-pointer"
+                                        className="w-full text-left p-3.5 hover:bg-gray-50 rounded-xl border border-gray-200 flex justify-between items-center transition-all hover:border-gray-300 cursor-pointer"
                                     >
                                         <div>
-                                            <span className="font-bold block text-white text-sm">{p.name}</span>
-                                            <span className="text-xs text-gray-400 font-mono">Barcode: {p.barcode}</span>
+                                            <span className="font-semibold block text-gray-900 text-sm">{p.name}</span>
+                                            <span className="text-xs text-gray-500 font-mono">Barcode: {p.barcode}</span>
                                         </div>
-                                        <span className="text-xs bg-green-950 text-green-400 px-2.5 py-1 rounded-full font-bold border border-green-900/50">
+                                        <span className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full font-bold border border-blue-100">
                                             Scan
                                         </span>
                                     </button>
                                 ))}
                                 {products.filter(p => p.barcode).length === 0 && (
-                                    <div className="text-center py-8 text-gray-500">
+                                    <div className="text-center py-8 text-gray-400">
                                         No products have barcodes registered.
                                     </div>
                                 )}
