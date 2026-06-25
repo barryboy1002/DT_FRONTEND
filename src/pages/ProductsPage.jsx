@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 
 import ProductsTable from "../components/products/ProductsTable";
 import ProductModal from "../components/products/ProductModal";
@@ -40,7 +41,10 @@ function ProductsPage() {
         setEditingProduct] =
         useState(null);
 
-    async function loadData() {
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    async function loadData(term = search) {
 
         try {
 
@@ -48,7 +52,7 @@ function ProductsPage() {
                 productsResponse,
                 categoriesResponse
             ] = await Promise.all([
-                getProducts(),
+                getProducts({ search: term }),
                 getCategories()
             ]);
 
@@ -71,11 +75,33 @@ function ProductsPage() {
         }
     }
 
+    async function loadProducts(term) {
+        try {
+            const productsResponse = await getProducts({ search: term });
+            setProducts(productsResponse.data || []);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     useEffect(() => {
 
-        loadData();
+        loadData("");
 
     }, []);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [search]);
+
+    useEffect(() => {
+        if (!loading) {
+            loadProducts(debouncedSearch);
+        }
+    }, [debouncedSearch]);
 
     async function handleCreateProduct(
         product
@@ -87,7 +113,7 @@ function ProductsPage() {
                 product
             );
 
-            await loadData();
+            await loadData(search);
 
             setShowProductModal(
                 false
@@ -111,7 +137,7 @@ function ProductsPage() {
                 product
             );
 
-            await loadData();
+            await loadData(search);
 
             setEditingProduct(
                 null
@@ -145,7 +171,7 @@ function ProductsPage() {
                 productId
             ]);
 
-            await loadData();
+            await loadData(search);
 
         } catch (error) {
 
@@ -164,7 +190,7 @@ function ProductsPage() {
                 name
             );
 
-            await loadData();
+            await loadData(search);
 
         } catch (error) {
 
@@ -190,7 +216,7 @@ function ProductsPage() {
                 categoryId
             );
 
-            await loadData();
+            await loadData(search);
 
         } catch (error) {
 
@@ -294,6 +320,26 @@ function ProductsPage() {
 
                 </div>
 
+            </div>
+
+            {/* Search Section */}
+            <div className="flex items-center bg-white rounded-xl shadow px-4 py-3 border border-gray-100">
+                <Search className="text-gray-400 mr-3 h-5 w-5" />
+                <input
+                    type="text"
+                    placeholder="Search products by name, brand, or barcode..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full bg-transparent border-none outline-none text-gray-700 placeholder-gray-400 focus:ring-0 text-sm"
+                />
+                {search && (
+                    <button
+                        onClick={() => setSearch("")}
+                        className="text-gray-400 hover:text-gray-600 text-sm font-medium ml-2 px-2 py-1 rounded hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                        Clear
+                    </button>
+                )}
             </div>
 
             <ProductsTable
