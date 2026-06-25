@@ -263,13 +263,13 @@ function SalesHistoryPage() {
             {/* Detail Receipt Modal */}
             {showDetailsModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
-                    <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-lg overflow-hidden shadow-xl text-gray-900">
+                    <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md overflow-hidden shadow-xl text-gray-900">
                         
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <h3 className="font-semibold text-lg text-gray-900 flex items-center gap-2">
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <h3 className="font-semibold text-base text-gray-900 flex items-center gap-2">
                                 <FileText className="h-5 w-5 text-blue-600" />
-                                <span>Receipt Details</span>
+                                <span>Receipt</span>
                             </h3>
                             <button
                                 onClick={() => {
@@ -283,96 +283,99 @@ function SalesHistoryPage() {
                         </div>
 
                         {/* Modal Content */}
-                        <div className="p-6 space-y-6">
+                        <div className="p-6 space-y-4">
                             
-                            {/* Receipt Summary Grid */}
-                            <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-150 text-sm">
-                                <div className="space-y-1">
-                                    <span className="text-xs font-bold text-gray-400 uppercase block">Receipt No</span>
-                                    <span className="font-mono font-bold text-gray-800 text-sm">
-                                        {selectedSale?.receipt_number || `RCP-${selectedSale?.sale_id}`}
-                                    </span>
-                                </div>
-                                <div className="space-y-1">
-                                    <span className="text-xs font-bold text-gray-400 uppercase block">Customer Name</span>
-                                    <span className="font-medium text-gray-800 text-sm">
-                                        {selectedSale?.customer_name || "Walk-in customer"}
-                                    </span>
-                                </div>
-                                <div className="space-y-1">
-                                    <span className="text-xs font-bold text-gray-400 uppercase block">Date & Time</span>
-                                    <span className="text-gray-805 text-xs">
-                                        {formatDate(selectedSale?.date_time)}
-                                    </span>
-                                </div>
-                                <div className="space-y-1">
-                                    <span className="text-xs font-bold text-gray-400 uppercase block">Payment Method</span>
-                                    <span className="text-gray-800 font-semibold text-sm">
-                                        {formatPaymentMethod(selectedSale?.payment_method)}
-                                    </span>
-                                </div>
+                            {/* Receipt Header - Centered */}
+                            <div className="text-center space-y-1 pb-4 border-b border-gray-200">
+                                <h2 className="text-2xl font-bold text-gray-900">DukaTrack</h2>
+                                <p className="text-sm text-gray-600">{formatDate(selectedSale?.date_time)}</p>
+                                <p className="text-sm text-gray-700">
+                                    Receipt: <span className="font-mono font-bold">{selectedSale?.receipt_number || `RCP-${selectedSale?.sale_id}`}</span>
+                                </p>
+                                <p className="text-sm text-gray-700">
+                                    Customer: <span className="font-medium">{selectedSale?.customer_name || "Walk-in"}</span>
+                                </p>
                             </div>
 
-                            {/* Items List Table */}
+                            {/* Items List */}
                             <div className="space-y-3">
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Transaction Items</h4>
-                                <div className="border border-gray-200 rounded-xl overflow-hidden">
-                                    {loadingDetails ? (
-                                        <div className="text-center py-8 text-gray-400">
-                                            <p className="text-sm">Retrieving items...</p>
-                                        </div>
-                                    ) : (
-                                        <table className="w-full text-sm">
-                                            <thead className="bg-gray-50 border-b border-gray-200 text-left text-gray-500 text-xs">
-                                                <tr>
-                                                    <th className="p-3 font-semibold">Product</th>
-                                                    <th className="p-3 font-semibold text-center">Qty</th>
-                                                    <th className="p-3 font-semibold text-right">Price</th>
-                                                    <th className="p-3 font-semibold text-right">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-gray-150 text-gray-900">
-                                                {saleDetails?.items?.map((item) => (
-                                                    <tr key={item.sale_item_id}>
-                                                        <td className="p-3 font-medium">
+                                {loadingDetails ? (
+                                    <div className="text-center py-8 text-gray-400">
+                                        <p className="text-sm">Retrieving items...</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {saleDetails?.items?.map((item, index) => (
+                                            <div key={item.sale_item_id} className="space-y-1">
+                                                <div className="flex justify-between items-start">
+                                                    <div className="flex-1">
+                                                        <p className="font-semibold text-gray-900 text-sm">
                                                             {item.product_name || `Product ID: ${item.product_id}`}
-                                                        </td>
-                                                        <td className="p-3 text-center text-gray-650">
-                                                            {item.quantity}
-                                                        </td>
-                                                        <td className="p-3 text-right text-gray-600">
-                                                            KES {Number(item.unit_price).toLocaleString()}
-                                                        </td>
-                                                        <td className="p-3 text-right font-semibold">
-                                                            KES {(Number(item.quantity) * Number(item.unit_price)).toLocaleString()}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                                
-                                                {/* Total row */}
-                                                <tr className="bg-gray-50 font-bold border-t border-gray-200 text-base">
-                                                    <td colSpan="3" className="p-3 text-gray-900">Grand Total</td>
-                                                    <td className="p-3 text-right text-blue-700">
-                                                        KES {Number(saleDetails?.total || 0).toLocaleString()}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    )}
-                                </div>
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {item.quantity} x KSh {Number(item.unit_price).toLocaleString()}
+                                                        </p>
+                                                        {(item.barcode || item.product_id) && (
+                                                            <p className="text-xs text-gray-400 font-mono">
+                                                                {item.barcode ? `Barcode: ${item.barcode}` : `ID: ${item.product_id}`}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <p className="font-semibold text-gray-900 text-sm">
+                                                        KSh {(Number(item.quantity) * Number(item.unit_price)).toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                {index < saleDetails.items.length - 1 && (
+                                                    <div className="border-b border-gray-100 pt-2"></div>
+                                                )}
+                                            </div>
+                                        ))}
+                                        
+                                        {/* Subtotal and Total */}
+                                        <div className="pt-3 border-t border-gray-200 space-y-2">
+                                            <div className="flex justify-between text-sm text-gray-600">
+                                                <span>Subtotal</span>
+                                                <span>KSh {Number(saleDetails?.total || 0).toLocaleString()}</span>
+                                            </div>
+                                            <div className="flex justify-between text-base font-bold text-gray-900">
+                                                <span>Total</span>
+                                                <span>KSh {Number(saleDetails?.total || 0).toLocaleString()}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm text-gray-600 pt-2 border-t border-gray-100">
+                                                <span>Payment</span>
+                                                <span className="font-medium">{formatPaymentMethod(selectedSale?.payment_method)}</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Footer Messages */}
+                            <div className="text-center space-y-2 pt-4 border-t border-gray-200">
+                                <p className="text-sm text-gray-600">Thank you for your business!</p>
+                                <p className="text-xs text-gray-400">Powered by DukaTrack</p>
                             </div>
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end">
+                        <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
+                            <button
+                                onClick={() => window.print()}
+                                className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium border border-gray-300 rounded-lg text-sm transition-colors cursor-pointer flex items-center gap-2"
+                            >
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                </svg>
+                                Print
+                            </button>
                             <button
                                 onClick={() => {
                                     setShowDetailsModal(false);
                                     setSaleDetails(null);
                                 }}
-                                className="px-5 py-2.5 bg-white hover:bg-gray-100 text-gray-700 font-semibold border border-gray-300 rounded-lg text-sm transition-colors cursor-pointer"
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition-colors cursor-pointer"
                             >
-                                Close
+                                Done
                             </button>
                         </div>
                     </div>
