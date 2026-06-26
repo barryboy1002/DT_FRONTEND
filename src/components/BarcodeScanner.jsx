@@ -7,11 +7,15 @@ function BarcodeScanner({ onScan, onClose }) {
     const [isScanning, setIsScanning] = useState(false);
     const [error, setError] = useState("");
     const html5QrCodeRef = useRef(null);
+    const isMountedRef = useRef(true);
 
     useEffect(() => {
+        isMountedRef.current = true;
         startScanner();
+        
         return () => {
-            stopScanner();
+            isMountedRef.current = false;
+            cleanupScanner();
         };
     }, []);
 
@@ -27,9 +31,12 @@ function BarcodeScanner({ onScan, onClose }) {
                     fps: 10,
                     qrbox: { width: 250, height: 150 }
                 },
-                (decodedText) => {
-                    onScan(decodedText);
-                    stopScanner();
+                async (decodedText) => {
+                    // Stop scanner immediately when barcode is detected
+                    await cleanupScanner();
+                    if (isMountedRef.current) {
+                        onScan(decodedText);
+                    }
                 },
                 (errorMessage) => {
                     // Ignore scanning errors (happens continuously while scanning)
@@ -42,15 +49,25 @@ function BarcodeScanner({ onScan, onClose }) {
         }
     };
 
-    const stopScanner = async () => {
-        if (html5QrCodeRef.current && isScanning) {
+    const cleanupScanner = async () => {
+        if (html5QrCodeRef.current) {
             try {
-                await html5QrCodeRef.current.stop();
+                const state = html5QrCodeRef.current.getState();
+                if (state === 2) { // Html5QrcodeScannerState.SCANNING
+                    await html5QrCodeRef.current.stop();
+                }
                 html5QrCodeRef.current.clear();
+                html5QrCodeRef.current = null;
+                setIsScanning(false);
             } catch (err) {
                 console.error("Error stopping scanner:", err);
             }
         }
+    };
+
+    const handleClose = async () => {
+        await cleanupScanner();
+        onClose();
     };
 
     return (
@@ -63,10 +80,7 @@ function BarcodeScanner({ onScan, onClose }) {
                         <span>Scan Barcode</span>
                     </h3>
                     <button
-                        onClick={() => {
-                            stopScanner();
-                            onClose();
-                        }}
+                        onClick={handleClose}
                         className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                     >
                         <X className="h-5 w-5" />

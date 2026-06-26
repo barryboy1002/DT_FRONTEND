@@ -472,14 +472,18 @@ function SalesPage() {
             {showScanModal && (
                 <BarcodeScanner
                     onScan={(barcode) => {
-                        const matchedProduct = products.find(p => p.barcode && p.barcode === barcode);
-                        if (matchedProduct) {
-                            addToCart(matchedProduct);
-                            setShowScanModal(false);
-                        } else {
-                            setErrorMsg(`No product found with barcode: ${barcode}`);
-                            setShowScanModal(false);
-                        }
+                        // Close modal first to allow scanner cleanup
+                        setShowScanModal(false);
+                        
+                        // Then process the scanned barcode
+                        setTimeout(() => {
+                            const matchedProduct = products.find(p => p.barcode && p.barcode === barcode);
+                            if (matchedProduct) {
+                                addToCart(matchedProduct);
+                            } else {
+                                setErrorMsg(`No product found with barcode: ${barcode}`);
+                            }
+                        }, 100);
                     }}
                     onClose={() => setShowScanModal(false)}
                 />

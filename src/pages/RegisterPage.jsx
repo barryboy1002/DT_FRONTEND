@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 function RegisterPage() {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         businessName: "",
@@ -31,12 +33,15 @@ function RegisterPage() {
         setLoading(true);
 
         try {
-            await api.post(
+            const response = await api.post(
                 "/auth/register",
                 formData
             );
 
-            navigate("/login");
+            // Auto-login after successful registration
+            const { token, user } = response.data.data;
+            login(token, user);
+            navigate("/");
         } catch (error) {
             setError(
                 error.response?.data?.error ||
