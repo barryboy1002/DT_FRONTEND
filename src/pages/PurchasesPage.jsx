@@ -3,13 +3,16 @@ import { Search, Plus, X, Eye, Calendar, DollarSign, Package, Truck, FileText } 
 import { getPurchases, getPurchase, createPurchase } from "../api/purchasesApi";
 import { getProducts } from "../api/productsApi";
 import { getSuppliers } from "../api/suppliersApi";
+import { useAppSettings } from "../context/AppSettingsContext";
 
 function PurchasesPage() {
+    const { purchaseFilters, setPurchaseFilters } = useAppSettings();
+
     const [purchases, setPurchases] = useState([]);
     const [products, setProducts] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
-    const [from, setFrom] = useState("");
-    const [to, setTo] = useState("");
+    const [from, setFrom] = useState(purchaseFilters.from || "");
+    const [to, setTo] = useState(purchaseFilters.to || "");
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -88,6 +91,10 @@ function PurchasesPage() {
         }, 300);
         return () => clearTimeout(handler);
     }, [search]);
+
+    useEffect(() => {
+        setPurchaseFilters({ from, to });
+    }, [from, to, setPurchaseFilters]);
 
     // Load initial data
     useEffect(() => {

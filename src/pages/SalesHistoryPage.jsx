@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Search, X, Eye, Calendar, DollarSign, Clock, User, FileText } from "lucide-react";
 import { getSales, getSale } from "../api/salesApi";
+import { useAppSettings } from "../context/AppSettingsContext";
 
 function SalesHistoryPage() {
+    const { salesHistoryFilters, setSalesHistoryFilters } = useAppSettings();
+
     const [sales, setSales] = useState([]);
-    const [from, setFrom] = useState("");
-    const [to, setTo] = useState("");
-    const [paymentMethod, setPaymentMethod] = useState(""); // empty means All Payments
+    const [from, setFrom] = useState(salesHistoryFilters.from || "");
+    const [to, setTo] = useState(salesHistoryFilters.to || "");
+    const [paymentMethod, setPaymentMethod] = useState(salesHistoryFilters.paymentMethod || ""); // empty means All Payments
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -44,6 +47,10 @@ function SalesHistoryPage() {
         }, 300);
         return () => clearTimeout(handler);
     }, [search]);
+
+    useEffect(() => {
+        setSalesHistoryFilters({ from, to, paymentMethod });
+    }, [from, to, paymentMethod, setSalesHistoryFilters]);
 
     // Reload list when filters change
     useEffect(() => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import DashboardCard from "../components/DashboardCard";
 import RecentSalesTable from "../components/RecentSalesTable";
+import { useAppSettings } from "../context/AppSettingsContext";
 
 import SalesTrendChart from "../components/charts/SalesTrendChart";
 import ProductDistributionChart from "../components/charts/ProductDistributionChart";
@@ -15,7 +16,9 @@ getProductDistribution
 } from "../api/reportsApi";
 
 function DashboardPage() {
-   const [stats, setStats] = useState({
+    const { dashboardPeriod, setDashboardPeriod } = useAppSettings();
+
+    const [stats, setStats] = useState({
         todayRevenue: 0,
         lowStock: 0,
         outOfStock: 0
@@ -24,8 +27,7 @@ function DashboardPage() {
 
     const [sales, setSales] = useState([]);
 
-    const [period, setPeriod] =
-        useState("monthly");
+    const period = dashboardPeriod;
 
     const [trendData, setTrendData] =
         useState([]);
@@ -111,7 +113,7 @@ function DashboardPage() {
                 <select
                     value={period}
                     onChange={(e) =>
-                        setPeriod(
+                        setDashboardPeriod(
                             e.target.value
                         )
                     }
