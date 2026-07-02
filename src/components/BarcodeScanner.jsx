@@ -71,8 +71,8 @@ function BarcodeScanner({ onScan, onClose }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-            <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md overflow-hidden shadow-xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-[60]">
+            <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md overflow-hidden shadow-xl relative z-[61]">
                 {/* Header */}
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <h3 className="font-semibold text-lg text-gray-900 flex items-center gap-2">
@@ -95,7 +95,7 @@ function BarcodeScanner({ onScan, onClose }) {
                         </div>
                     ) : (
                         <>
-                            <div id="barcode-reader" className="w-full rounded-lg overflow-hidden"></div>
+                            <div id="barcode-reader" className="w-full min-h-[280px] rounded-lg overflow-hidden bg-gray-100"></div>
                             <p className="text-sm text-gray-500 mt-4 text-center">
                                 Position the barcode within the frame to scan
                             </p>
