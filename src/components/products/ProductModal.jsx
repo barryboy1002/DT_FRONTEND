@@ -1,4 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Camera } from "lucide-react";
+import BarcodeScanner from "../BarcodeScanner";
+
+const createInitialFormData = (product) => ({
+    name: product?.name || "",
+    category_id: product?.category_id || "",
+    barcode: product?.barcode || "",
+    buying_price: product?.buying_price || "",
+    selling_price: product?.selling_price || "",
+    brand: product?.brand || "",
+    unit: product?.unit || "",
+    low_stock_threshhold: product?.low_stock_threshhold ?? 10,
+    description: product?.description || ""
+});
 
 function ProductModal({
     isOpen,
@@ -8,72 +22,14 @@ function ProductModal({
     product = null
 }) {
 
-    const [formData, setFormData] =
-        useState({
-            name: "",
-            category_id: "",
-            barcode: "",
-            buying_price: "",
-            selling_price: "",
-            brand: "",
-            unit: "",
-            low_stock_threshhold: 10,
-            description: ""
-        });
+    const [formData, setFormData] = useState(() => createInitialFormData(product));
+    const [showScanner, setShowScanner] = useState(false);
 
     useEffect(() => {
-
-        if (product) {
-
-            setFormData({
-                name:
-                    product.name || "",
-
-                category_id:
-                    product.category_id || "",
-
-                barcode:
-                    product.barcode || "",
-
-                buying_price:
-                    product.buying_price || "",
-
-                selling_price:
-                    product.selling_price || "",
-
-                brand:
-                    product.brand || "",
-
-                unit:
-                    product.unit || "",
-
-                low_stock_threshhold:
-                    product.low_stock_threshhold || 10,
-
-                description:
-                    product.description || ""
-            });
-
-        } else {
-
-            setFormData({
-                name: "",
-                category_id: "",
-                barcode: "",
-                buying_price: "",
-                selling_price: "",
-                brand: "",
-                unit: "",
-                low_stock_threshhold: 10,
-                description: ""
-            });
-
-        }
-
+        setFormData(createInitialFormData(product));
     }, [product]);
 
-    function handleChange(e) {
-
+    const handleChange = useCallback((e) => {
         const {
             name,
             value
@@ -83,45 +39,47 @@ function ProductModal({
             ...prev,
             [name]: value
         }));
+    }, []);
 
-    }
+    const handleBarcodeScanned = useCallback((barcode) => {
+        setFormData(prev => ({
+            ...prev,
+            barcode
+        }));
+        setShowScanner(false);
+    }, []);
 
-    async function handleSubmit(e) {
-
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
 
         await onSubmit({
             ...formData,
-            buying_price:
-                Number(
-                    formData.buying_price
-                ),
-
-            selling_price:
-                Number(
-                    formData.selling_price
-                ),
-
-            low_stock_threshhold:
-                Number(
-                    formData.low_stock_threshhold
-                )
+            buying_price: Number(formData.buying_price),
+            selling_price: Number(formData.selling_price),
+            low_stock_threshhold: Number(formData.low_stock_threshhold)
         });
-
-    }
+    }, [formData, onSubmit]);
 
     if (!isOpen) return null;
 
     return (
-        <div
-            className="
-            fixed inset-0
-            bg-black/50
-            flex items-center
-            justify-center
-            z-50
-            "
-        >
+        <>
+            {showScanner && (
+                <BarcodeScanner
+                    onScan={handleBarcodeScanned}
+                    onClose={() => setShowScanner(false)}
+                />
+            )}
+
+            <div
+                className="
+                fixed inset-0
+                bg-black/50
+                flex items-center
+                justify-center
+                z-50
+                "
+            >
 
             <div
                 className="
@@ -352,13 +310,29 @@ function ProductModal({
                                 Barcode
                             </label>
 
-                            <input
-                                type="text"
-                                name="barcode"
-                                value={formData.barcode}
-                                onChange={handleChange}
-                                className="w-full border rounded-lg px-4 py-2"
-                            />
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    name="barcode"
+                                    value={formData.barcode}
+                                    onChange={handleChange}
+                                    placeholder="Enter barcode or scan"
+                                    className="flex-1 border rounded-lg px-4 py-2"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowScanner(true)}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 whitespace-nowrap"
+                                    title="Scan barcode with camera"
+                                >
+                                    <Camera size={18} />
+                                    Scan
+                                </button>
+                            </div>
+
+                            <p className="mt-2 text-xs text-gray-500">
+                                You can scan a barcode with your camera or type it manually.
+                            </p>
 
                         </div>
 
@@ -448,7 +422,8 @@ function ProductModal({
 
             </div>
 
-        </div>
+            </div>
+        </>
     );
 }
 
