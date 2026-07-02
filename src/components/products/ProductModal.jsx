@@ -2,6 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { Camera } from "lucide-react";
 import BarcodeScanner from "../BarcodeScanner";
 
+const getSafeErrorMessage = (error) => {
+    const status = error?.response?.status;
+    const backendMessage = error?.response?.data?.message || error?.response?.data?.error || "";
+
+    if (status === 409 || /duplicate|already exists|barcode/i.test(backendMessage)) {
+        return "This barcode already exists. Please use a different barcode or update the existing product.";
+    }
+
+    return "We couldn’t save the product right now. Please try again.";
+};
+
 const createInitialFormData = (product) => ({
     name: product?.name || "",
     category_id: product?.category_id || "",
@@ -24,6 +35,8 @@ function ProductModal({
 
     const [formData, setFormData] = useState(() => createInitialFormData(product));
     const [showScanner, setShowScanner] = useState(false);
+    const [submitError, setSubmitError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         setFormData(createInitialFormData(product));
@@ -35,6 +48,7 @@ function ProductModal({
             value
         } = e.target;
 
+        setSubmitError("");
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -52,12 +66,21 @@ function ProductModal({
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
 
-        await onSubmit({
-            ...formData,
-            buying_price: Number(formData.buying_price),
-            selling_price: Number(formData.selling_price),
-            low_stock_threshhold: Number(formData.low_stock_threshhold)
-        });
+        setSubmitError("");
+        setIsSubmitting(true);
+
+        try {
+            await onSubmit({
+                ...formData,
+                buying_price: Number(formData.buying_price),
+                selling_price: Number(formData.selling_price),
+                low_stock_threshhold: Number(formData.low_stock_threshhold)
+            });
+        } catch (error) {
+            setSubmitError(getSafeErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
+        }
     }, [formData, onSubmit]);
 
     if (!isOpen) return null;
@@ -376,6 +399,12 @@ function ProductModal({
 
                     </div>
 
+                    {submitError && (
+                        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {submitError}
+                        </div>
+                    )}
+
                     <div
                         className="
                         flex
@@ -400,6 +429,7 @@ function ProductModal({
 
                         <button
                             type="submit"
+                            disabled={isSubmitting}
                             className="
                             px-5
                             py-2
@@ -407,13 +437,10 @@ function ProductModal({
                             text-white
                             rounded-lg
                             hover:bg-green-700
+                            disabled:cursor-not-allowed disabled:opacity-70
                             "
                         >
-                            {
-                                product
-                                    ? "Update Product"
-                                    : "Create Product"
-                            }
+                            {isSubmitting ? "Saving..." : (product ? "Update Product" : "Create Product")}
                         </button>
 
                     </div>
