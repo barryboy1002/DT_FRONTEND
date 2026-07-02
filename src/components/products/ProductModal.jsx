@@ -6,9 +6,17 @@ import { getErrorMessage } from "../../api/axios";
 const getSafeErrorMessage = (error) => {
     const status = error?.response?.status;
     const backendMessage = error?.response?.data?.message || error?.response?.data?.error || "";
+    const validationErrors = error?.response?.data?.errors;
 
     if (status === 409 || /duplicate|already exists|barcode/i.test(backendMessage)) {
         return "This barcode already exists. Please use a different barcode or update the existing product.";
+    }
+
+    if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+        const firstMessage = validationErrors[0]?.msg || validationErrors[0]?.message;
+        if (firstMessage) {
+            return firstMessage;
+        }
     }
 
     return getErrorMessage(error);
@@ -68,6 +76,27 @@ function ProductModal({
         e.preventDefault();
 
         setSubmitError("");
+
+        if (!formData.name?.trim()) {
+            setSubmitError("Please enter a product name.");
+            return;
+        }
+
+        if (!formData.category_id) {
+            setSubmitError("Please select a category before saving the product.");
+            return;
+        }
+
+        if (!formData.buying_price || Number(formData.buying_price) <= 0) {
+            setSubmitError("Buying price must be greater than zero.");
+            return;
+        }
+
+        if (!formData.selling_price || Number(formData.selling_price) <= 0) {
+            setSubmitError("Selling price must be greater than zero.");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {

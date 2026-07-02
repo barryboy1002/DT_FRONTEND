@@ -109,7 +109,7 @@ function ProductsPage() {
             await loadData(debouncedSearch);
             setShowProductModal(false);
         } catch (error) {
-            console.error(error);
+            throw error;
         }
     }
 
@@ -120,7 +120,7 @@ function ProductsPage() {
             setEditingProduct(null);
             setShowProductModal(false);
         } catch (error) {
-            console.error(error);
+            throw error;
         }
     }
 
