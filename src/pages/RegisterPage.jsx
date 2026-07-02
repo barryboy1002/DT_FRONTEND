@@ -43,10 +43,7 @@ function RegisterPage() {
             login(token, user);
             navigate("/");
         } catch (error) {
-            setError(
-                error.response?.data?.error ||
-                "Registration failed"
-            );
+            setError(error.userMessage || "Registration failed");
         } finally {
             setLoading(false);
         }

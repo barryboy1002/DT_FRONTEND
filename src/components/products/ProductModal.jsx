@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Camera } from "lucide-react";
 import BarcodeScanner from "../BarcodeScanner";
+import { getErrorMessage } from "../../api/axios";
 
 const getSafeErrorMessage = (error) => {
     const status = error?.response?.status;
@@ -10,7 +11,7 @@ const getSafeErrorMessage = (error) => {
         return "This barcode already exists. Please use a different barcode or update the existing product.";
     }
 
-    return "We couldn’t save the product right now. Please try again.";
+    return getErrorMessage(error);
 };
 
 const createInitialFormData = (product) => ({

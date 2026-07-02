@@ -40,10 +40,7 @@ function LoginPage() {
 
             navigate("/");
         } catch (error) {
-            setError(
-                error.response?.data?.error ||
-                "Invalid email or password"
-            );
+            setError(error.userMessage || "Invalid email or password");
         } finally {
             setLoading(false);
         }

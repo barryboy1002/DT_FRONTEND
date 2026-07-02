@@ -16,7 +16,11 @@ function AuthProvider({ children }) {
             const result = await getCurrentUser();
             setUser(result.data);
         } catch (error) {
-            logout();
+            console.error("Failed to load current user", error);
+
+            if (error?.response?.status === 401) {
+                logout();
+            }
         } finally {
             setLoading(false);
         }
