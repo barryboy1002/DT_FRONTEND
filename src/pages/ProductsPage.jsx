@@ -109,6 +109,7 @@ function ProductsPage() {
     async function handleCreateProduct(product) {
         try {
             await createProduct(product);
+            window.dispatchEvent(new CustomEvent("dukatrack:products-updated"));
             await loadData(debouncedSearch);
             setShowProductModal(false);
         } catch (error) {
@@ -119,6 +120,7 @@ function ProductsPage() {
     async function handleUpdateProduct(product) {
         try {
             await updateProduct(editingProduct.product_id, product);
+            window.dispatchEvent(new CustomEvent("dukatrack:products-updated"));
             await loadData(debouncedSearch);
             setEditingProduct(null);
             setShowProductModal(false);
@@ -133,6 +135,7 @@ function ProductsPage() {
 
         try {
             await deleteProducts([productId]);
+            window.dispatchEvent(new CustomEvent("dukatrack:products-updated"));
             await loadData(debouncedSearch);
         } catch (error) {
             console.error(error);

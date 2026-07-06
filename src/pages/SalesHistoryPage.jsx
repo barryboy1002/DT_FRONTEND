@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Search, X, Eye, Calendar, DollarSign, Clock, User, FileText } from "lucide-react";
-import { getSales, getSale } from "../api/salesApi";
+import { Search, X, Eye, FileText, RotateCcw } from "lucide-react";
+import { getSales, getSale, refundSale } from "../api/salesApi";
 import { useAppSettings } from "../context/AppSettingsContext";
 
 function SalesHistoryPage() {
@@ -13,6 +13,11 @@ function SalesHistoryPage() {
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(10);
+    const [meta, setMeta] = useState({ page: 1, limit: 10, total_pages: 1, total_items: 0 });
+    const [submittingRefund, setSubmittingRefund] = useState(false);
+    const [refundReason, setRefundReason] = useState("");
 
     // Detail Modal State
     const [selectedSale, setSelectedSale] = useState(null);
@@ -20,6 +25,7 @@ function SalesHistoryPage() {
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [loadingDetails, setLoadingDetails] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
 
     async function loadSalesList(params = {}) {
         setLoading(true);
@@ -30,8 +36,9 @@ function SalesHistoryPage() {
             if (params.paymentMethod) queryParams.payment_method = params.paymentMethod;
             if (params.search) queryParams.search = params.search;
 
-            const response = await getSales(queryParams);
+            const response = await getSales({ ...queryParams, page, limit: pageSize });
             setSales(response.data || []);
+            setMeta(response.meta || { page, limit: pageSize, total_pages: 1, total_items: 0 });
         } catch (error) {
             console.error(error);
             setErrorMsg("Failed to retrieve sales records.");
@@ -54,13 +61,17 @@ function SalesHistoryPage() {
 
     // Reload list when filters change
     useEffect(() => {
+        setPage(1);
+    }, [from, to, paymentMethod, debouncedSearch]);
+
+    useEffect(() => {
         loadSalesList({
             from,
             to,
             paymentMethod,
             search: debouncedSearch
         });
-    }, [from, to, paymentMethod, debouncedSearch]);
+    }, [from, to, paymentMethod, debouncedSearch, page, pageSize]);
 
     const handleViewDetails = async (sale) => {
         setSelectedSale(sale);
@@ -75,6 +86,23 @@ function SalesHistoryPage() {
             setErrorMsg("Could not fetch sale details.");
         } finally {
             setLoadingDetails(false);
+        }
+    };
+
+    const handleRefund = async () => {
+        if (!selectedSale) return;
+        setSubmittingRefund(true);
+        try {
+            await refundSale(selectedSale.sale_id, refundReason.trim() || null);
+            setRefundReason("");
+            setShowDetailsModal(false);
+            await loadSalesList({ from, to, paymentMethod, search: debouncedSearch });
+            setSuccessMsg("Refund recorded successfully.");
+        } catch (err) {
+            console.error(err);
+            setErrorMsg(err?.response?.data?.error || "Could not create refund.");
+        } finally {
+            setSubmittingRefund(false);
         }
     };
 
@@ -116,6 +144,20 @@ function SalesHistoryPage() {
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900">Sales History</h1>
                 <p className="text-gray-500 mt-1">Review past receipts, payments, and transaction history</p>
             </div>
+
+            {/* Success banner */}
+            {successMsg && (
+                <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-start gap-3 relative shadow-sm">
+                    <FileText className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                    <div>
+                        <h4 className="font-bold text-sm">Success</h4>
+                        <p className="text-xs mt-1 text-green-700">{successMsg}</p>
+                    </div>
+                    <button onClick={() => setSuccessMsg("")} className="absolute top-4 right-4 text-green-600 hover:text-green-800 cursor-pointer">
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
+            )}
 
             {/* Error banner */}
             {errorMsg && (
@@ -265,6 +307,14 @@ function SalesHistoryPage() {
                         </table>
                     </div>
                 )}
+                <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
+                    <span className="text-sm text-gray-600">Showing {sales.length} of {meta.total_items} transactions</span>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page <= 1} className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50">Previous</button>
+                        <span className="text-sm text-gray-600">Page {meta.page || 1} of {meta.total_pages || 1}</span>
+                        <button onClick={() => setPage((current) => current + 1)} disabled={page >= (meta.total_pages || 1)} className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 disabled:cursor-not-allowed disabled:opacity-50">Next</button>
+                    </div>
+                </div>
             </div>
 
             {/* Detail Receipt Modal */}
@@ -365,7 +415,19 @@ function SalesHistoryPage() {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
+                        <div className="p-4 border-t border-gray-100 bg-gray-50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                            <div className="flex-1">
+                                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Refund reason (optional)</label>
+                                <input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900" placeholder="Items damaged / change of mind" />
+                            </div>
+                            <button
+                                onClick={handleRefund}
+                                disabled={submittingRefund}
+                                className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                <RotateCcw className="h-4 w-4" />
+                                {submittingRefund ? "Refunding..." : "Refund Sale"}
+                            </button>
                             <button
                                 onClick={() => window.print()}
                                 className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium border border-gray-300 rounded-lg text-sm transition-colors cursor-pointer flex items-center gap-2"
@@ -379,6 +441,7 @@ function SalesHistoryPage() {
                                 onClick={() => {
                                     setShowDetailsModal(false);
                                     setSaleDetails(null);
+                                    setRefundReason("");
                                 }}
                                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition-colors cursor-pointer"
                             >

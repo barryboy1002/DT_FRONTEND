@@ -63,13 +63,15 @@ function Sidebar() {
         }
     ];
 
-    // Filter links based on role
     const filteredLinks = links.filter((link) => {
         if (user?.role === "cashier") {
-            // Cashiers can only perform sales, view history and products
             return ["/", "/products", "/sales", "/sales-history"].includes(link.path);
         }
-        // Owners and managers can access everything
+
+        if (user?.role === "manager") {
+            return !["/reports", "/branches", "/staff"].includes(link.path);
+        }
+
         return true;
     });
 

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { 
-    Users, 
-    UserPlus, 
-    Mail, 
-    Shield, 
-    MapPin, 
-    X, 
+import {
+    UserPlus,
+    Mail,
+    Shield,
+    MapPin,
+    X,
     Loader2,
-    Lock
+    Lock,
+    Pencil,
+    Trash2
 } from "lucide-react";
-import { getUsers, createUser } from "../api/authApi";
+import { getUsers, createUser, updateUser, deleteUser } from "../api/authApi";
 import { getBranches } from "../api/branchesApi";
 import { useAuth } from "../context/AuthContext";
 
@@ -20,9 +21,12 @@ function StaffPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
+    const canManageStaff = currentUser?.role === "owner";
 
     // Modal state
     const [isOpen, setIsOpen] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -55,12 +59,28 @@ function StaffPage() {
     }
 
     function handleOpenCreate() {
+        setIsEdit(false);
+        setCurrentUserId(null);
         setFormData({
             name: "",
             email: "",
             password: "",
-            role: currentUser?.role === "manager" ? "cashier" : "cashier",
+            role: "cashier",
             branchId: currentUser?.role === "manager" ? currentUser?.branch_id || "" : (branches[0]?.branch_id || "")
+        });
+        setIsOpen(true);
+        setError("");
+    }
+
+    function handleOpenEdit(member) {
+        setIsEdit(true);
+        setCurrentUserId(member.user_id);
+        setFormData({
+            name: member.name,
+            email: member.email,
+            password: "",
+            role: member.role,
+            branchId: member.branch_id || ""
         });
         setIsOpen(true);
         setError("");
@@ -70,27 +90,41 @@ function StaffPage() {
         e.preventDefault();
         setError("");
         
-        if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
-            setError("All fields are required.");
+        if (!formData.name.trim() || !formData.email.trim()) {
+            setError("Name and email are required.");
             return;
         }
 
-        // Quick basic validation
-        if (formData.password.length < 8) {
+        if (!isEdit && !formData.password.trim()) {
+            setError("Password is required for new staff members.");
+            return;
+        }
+
+        if (!isEdit && formData.password.length < 8) {
             setError("Password must be at least 8 characters long.");
             return;
         }
 
         setSubmitting(true);
         try {
-            await createUser({
-                name: formData.name,
-                email: formData.email,
-                password: formData.password,
-                role: formData.role,
-                branchId: formData.branchId || null
-            });
-            setSuccessMsg("Staff member added successfully!");
+            if (isEdit) {
+                await updateUser(currentUserId, {
+                    name: formData.name,
+                    email: formData.email,
+                    role: formData.role,
+                    branch_id: formData.branchId || null
+                });
+                setSuccessMsg("Staff member updated successfully!");
+            } else {
+                await createUser({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    role: formData.role,
+                    branchId: formData.branchId || null
+                });
+                setSuccessMsg("Staff member added successfully!");
+            }
             setIsOpen(false);
             loadData();
             setTimeout(() => setSuccessMsg(""), 3000);
@@ -102,46 +136,60 @@ function StaffPage() {
         }
     }
 
+    async function handleDelete(memberId) {
+        if (!window.confirm("Delete this staff member?")) return;
+
+        try {
+            await deleteUser(memberId);
+            setSuccessMsg("Staff member removed successfully.");
+            loadData();
+        } catch (err) {
+            console.error("Failed to delete staff member", err);
+            setError(err?.response?.data?.error || "Failed to remove staff member.");
+        }
+    }
+
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex justify-between items-center">
+        <div className="space-y-6 max-w-[1440px] mx-auto text-gray-900">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Staff Management</h2>
-                    <p className="text-sm text-slate-500">Manage user roles (owners, managers, cashiers) and their assigned branches</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Staff</h1>
+                    <p className="text-gray-500 mt-1">Manage users and their branch access in one place.</p>
                 </div>
-                <button
-                    onClick={handleOpenCreate}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg font-semibold shadow-md transition-colors duration-200"
-                >
-                    <UserPlus size={18} />
-                    Add Staff Member
-                </button>
+                {canManageStaff && (
+                    <button
+                        onClick={handleOpenCreate}
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold shadow-sm transition-colors duration-200"
+                    >
+                        <UserPlus size={18} />
+                        Add Staff Member
+                    </button>
+                )}
             </div>
 
             {/* Notification Messages */}
             {successMsg && (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center gap-3 animate-fade-in">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+                    <Shield size={16} className="mt-0.5" />
                     <span>{successMsg}</span>
                 </div>
             )}
             
             {error && (
-                <div className="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-lg flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-rose-500" />
+                <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+                    <X size={16} className="mt-0.5" />
                     <span>{error}</span>
                 </div>
             )}
 
             {/* Data Table */}
             {loading ? (
-                <div className="h-64 flex flex-col items-center justify-center gap-2">
-                    <Loader2 className="animate-spin text-indigo-600" size={32} />
-                    <span className="text-slate-500 font-medium">Fetching staff list...</span>
+                <div className="h-64 flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white shadow-sm">
+                    <Loader2 className="animate-spin text-blue-600" size={32} />
+                    <span className="text-gray-500 font-medium">Fetching staff list...</span>
                 </div>
             ) : (
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -151,6 +199,7 @@ function StaffPage() {
                                     <th className="px-6 py-4">Role</th>
                                     <th className="px-6 py-4">Assigned Branch</th>
                                     <th className="px-6 py-4">Registered Date</th>
+                                    {canManageStaff && <th className="px-6 py-4 text-right">Actions</th>}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
@@ -199,6 +248,18 @@ function StaffPage() {
                                                 day: 'numeric'
                                             })}
                                         </td>
+                                        {canManageStaff && (
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <button onClick={() => handleOpenEdit(member)} className="rounded-lg border border-gray-200 p-2 text-gray-600 hover:border-blue-200 hover:text-blue-600" title="Edit staff">
+                                                        <Pencil size={14} />
+                                                    </button>
+                                                    <button onClick={() => handleDelete(member.user_id)} className="rounded-lg border border-gray-200 p-2 text-gray-600 hover:border-red-200 hover:text-red-600" title="Delete staff">
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
@@ -252,20 +313,22 @@ function StaffPage() {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1 flex justify-between">
-                                    <span>Password <span className="text-rose-500">*</span></span>
-                                    <span className="text-slate-400 text-xs flex items-center gap-0.5 font-normal"><Lock size={12}/> Min. 8 chars (1 upper, 1 sym, 1 num)</span>
-                                </label>
-                                <input
-                                    type="password"
-                                    required
-                                    placeholder="••••••••"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
-                                />
-                            </div>
+                            {!isEdit && (
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1 flex justify-between">
+                                        <span>Password <span className="text-rose-500">*</span></span>
+                                        <span className="text-slate-400 text-xs flex items-center gap-0.5 font-normal"><Lock size={12}/> Min. 8 chars</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        required
+                                        placeholder="••••••••"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                                    />
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1">
@@ -321,7 +384,7 @@ function StaffPage() {
                                     className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-semibold text-sm shadow-sm transition-colors disabled:bg-indigo-400"
                                 >
                                     {submitting && <Loader2 size={16} className="animate-spin" />}
-                                    Create Account
+                                    {isEdit ? "Save Changes" : "Create Account"}
                                 </button>
                             </div>
                         </form>

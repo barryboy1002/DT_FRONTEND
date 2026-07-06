@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { 
-    Building, 
-    MapPin, 
-    Phone, 
-    Plus, 
-    Edit, 
-    Trash2, 
+import {
+    Building,
+    MapPin,
+    Phone,
+    Plus,
+    Edit,
+    Trash2,
     X,
     Loader2
 } from "lucide-react";
@@ -110,16 +110,15 @@ function BranchesPage() {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex justify-between items-center">
+        <div className="space-y-6 max-w-[1440px] mx-auto text-gray-900">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Business Branches</h2>
-                    <p className="text-sm text-slate-500">Manage and track your physical store outlets</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Branches</h1>
+                    <p className="text-gray-500 mt-1">Manage your physical outlets and keep staff assignments aligned.</p>
                 </div>
                 <button
                     onClick={handleOpenCreate}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg font-semibold shadow-md transition-colors duration-200"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold shadow-sm transition-colors duration-200"
                 >
                     <Plus size={18} />
                     Add Branch
@@ -128,37 +127,37 @@ function BranchesPage() {
 
             {/* Notification Messages */}
             {successMsg && (
-                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center gap-3 animate-fade-in">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+                    <Building size={16} className="mt-0.5" />
                     <span>{successMsg}</span>
                 </div>
             )}
             
             {error && (
-                <div className="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-lg flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-rose-500" />
+                <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+                    <X size={16} className="mt-0.5" />
                     <span>{error}</span>
                 </div>
             )}
 
             {/* Content Area */}
             {loading ? (
-                <div className="h-64 flex flex-col items-center justify-center gap-2">
-                    <Loader2 className="animate-spin text-indigo-600" size={32} />
-                    <span className="text-slate-500 font-medium">Fetching branches...</span>
+                <div className="h-64 flex flex-col items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white shadow-sm">
+                    <Loader2 className="animate-spin text-blue-600" size={32} />
+                    <span className="text-gray-500 font-medium">Fetching branches...</span>
                 </div>
             ) : branches.length === 0 ? (
-                <div className="bg-white rounded-xl border border-dashed border-slate-300 p-12 text-center max-w-xl mx-auto mt-8 shadow-sm">
-                    <div className="bg-indigo-50 p-4 rounded-full inline-block mb-4 text-indigo-600">
+                <div className="bg-white rounded-xl border border-dashed border-gray-300 p-12 text-center max-w-xl mx-auto shadow-sm">
+                    <div className="bg-blue-50 p-4 rounded-full inline-block mb-4 text-blue-600">
                         <Building size={32} />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-700 mb-1">No Branches Found</h3>
-                    <p className="text-slate-500 mb-6">Create your first branch to start categorizing stock, sales, and staff location.</p>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-1">No branches yet</h3>
+                    <p className="text-gray-500 mb-6">Create your first outlet so sales, staff, and inventory stay organized.</p>
                     <button
                         onClick={handleOpenCreate}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg font-semibold shadow-sm transition-colors duration-200"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold shadow-sm transition-colors duration-200"
                     >
-                        Create First Branch
+                        Create first branch
                     </button>
                 </div>
             ) : (
@@ -166,24 +165,24 @@ function BranchesPage() {
                     {branches.map((branch) => (
                         <div 
                             key={branch.branch_id}
-                            className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col justify-between"
+                            className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col justify-between"
                         >
                             <div className="p-6">
                                 <div className="flex items-start justify-between">
-                                    <div className="bg-indigo-50 text-indigo-600 p-3 rounded-lg">
+                                    <div className="bg-blue-50 text-blue-600 p-3 rounded-lg">
                                         <Building size={20} />
                                     </div>
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => handleOpenEdit(branch)}
-                                            className="text-slate-500 hover:text-indigo-600 p-1.5 rounded-md hover:bg-slate-50 transition-colors"
+                                            className="text-gray-500 hover:text-blue-600 p-1.5 rounded-md hover:bg-gray-50 transition-colors"
                                             title="Edit Branch"
                                         >
                                             <Edit size={16} />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(branch.branch_id)}
-                                            className="text-slate-500 hover:text-rose-600 p-1.5 rounded-md hover:bg-slate-50 transition-colors"
+                                            className="text-gray-500 hover:text-red-600 p-1.5 rounded-md hover:bg-gray-50 transition-colors"
                                             title="Delete Branch"
                                         >
                                             <Trash2 size={16} />
@@ -191,21 +190,21 @@ function BranchesPage() {
                                     </div>
                                 </div>
                                 <div className="mt-4">
-                                    <h3 className="font-semibold text-lg text-slate-800">{branch.name}</h3>
+                                    <h3 className="font-semibold text-lg text-gray-900">{branch.name}</h3>
                                     
                                     <div className="mt-4 space-y-2">
-                                        <div className="flex items-center gap-2.5 text-slate-600 text-sm">
-                                            <MapPin size={15} className="text-slate-400" />
+                                        <div className="flex items-center gap-2.5 text-gray-600 text-sm">
+                                            <MapPin size={15} className="text-gray-400" />
                                             <span>{branch.location || "No location set"}</span>
                                         </div>
-                                        <div className="flex items-center gap-2.5 text-slate-600 text-sm">
-                                            <Phone size={15} className="text-slate-400" />
+                                        <div className="flex items-center gap-2.5 text-gray-600 text-sm">
+                                            <Phone size={15} className="text-gray-400" />
                                             <span>{branch.phone || "No contact set"}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="bg-slate-50 px-6 py-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                            <div className="bg-gray-50 px-6 py-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
                                 <span>ID: {branch.branch_id.substring(0, 8)}...</span>
                                 <span>Created {new Date(branch.created_at).toLocaleDateString()}</span>
                             </div>

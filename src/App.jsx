@@ -18,6 +18,7 @@ import BranchesPage from "./pages/BranchesPage";
 import StaffPage from "./pages/StaffPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
+import RequireRole from "./routes/RequireRole";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
@@ -74,17 +75,29 @@ function App() {
 
                     <Route
                         path="reports"
-                        element={<ReportsPage />}
+                        element={
+                            <RequireRole allowedRoles={["owner"]}>
+                                <ReportsPage />
+                            </RequireRole>
+                        }
                     />
 
                     <Route
                         path="branches"
-                        element={<BranchesPage />}
+                        element={
+                            <RequireRole allowedRoles={["owner"]}>
+                                <BranchesPage />
+                            </RequireRole>
+                        }
                     />
 
                     <Route
                         path="staff"
-                        element={<StaffPage />}
+                        element={
+                            <RequireRole allowedRoles={["owner"]}>
+                                <StaffPage />
+                            </RequireRole>
+                        }
                     />
                 </Route>
             </Routes>

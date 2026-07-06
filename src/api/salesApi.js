@@ -23,3 +23,8 @@ export async function getSale(saleId) {
     const response = await api.get(`/sales/${saleId}`);
     return response.data;
 }
+
+export async function refundSale(saleId, reason) {
+    const response = await api.post(`/sales/${saleId}/refund`, { reason });
+    return response.data;
+}

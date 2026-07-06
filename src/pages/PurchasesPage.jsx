@@ -103,6 +103,12 @@ function PurchasesPage() {
         loadSuppliers();
     }, [from, to]);
 
+    useEffect(() => {
+        const handleProductsUpdated = () => loadProducts();
+        window.addEventListener("dukatrack:products-updated", handleProductsUpdated);
+        return () => window.removeEventListener("dukatrack:products-updated", handleProductsUpdated);
+    }, []);
+
     // Filter products for modal
     useEffect(() => {
         if (productSearch.trim()) {
