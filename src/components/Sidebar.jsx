@@ -5,12 +5,16 @@ import {
     Truck,
     Users,
     History,
-    FileText
+    FileText,
+    Building
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Sidebar() {
+    const { user } = useAuth();
+
     const links = [
         {
             name: "Dashboard",
@@ -46,8 +50,28 @@ function Sidebar() {
             name: "Reports",
             path: "/reports",
             icon: FileText
+        },
+        {
+            name: "Branches",
+            path: "/branches",
+            icon: Building
+        },
+        {
+            name: "Staff",
+            path: "/staff",
+            icon: Users
         }
     ];
+
+    // Filter links based on role
+    const filteredLinks = links.filter((link) => {
+        if (user?.role === "cashier") {
+            // Cashiers can only perform sales, view history and products
+            return ["/", "/products", "/sales", "/sales-history"].includes(link.path);
+        }
+        // Owners and managers can access everything
+        return true;
+    });
 
     return (
         <aside className="w-64 bg-slate-900 text-white">
@@ -58,7 +82,7 @@ function Sidebar() {
             </div>
 
             <nav className="p-4 space-y-2">
-                {links.map((link) => {
+                {filteredLinks.map((link) => {
                     const Icon = link.icon;
 
                     return (

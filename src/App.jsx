@@ -14,6 +14,8 @@ import SalesHistoryPage from "./pages/SalesHistoryPage";
 import PurchasesPage from "./pages/PurchasesPage";
 import SuppliersPage from "./pages/SuppliersPage";
 import ReportsPage from "./pages/ReportsPage";
+import BranchesPage from "./pages/BranchesPage";
+import StaffPage from "./pages/StaffPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -73,6 +75,16 @@ function App() {
                     <Route
                         path="reports"
                         element={<ReportsPage />}
+                    />
+
+                    <Route
+                        path="branches"
+                        element={<BranchesPage />}
+                    />
+
+                    <Route
+                        path="staff"
+                        element={<StaffPage />}
                     />
                 </Route>
             </Routes>

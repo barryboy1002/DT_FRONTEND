@@ -1,4 +1,4 @@
-function ProductsTable({ products, onEdit, onDelete }) {
+function ProductsTable({ products, onEdit, onDelete, canModify = true }) {
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <table className="w-full text-sm">
@@ -9,7 +9,7 @@ function ProductsTable({ products, onEdit, onDelete }) {
                         <th className="p-4 font-semibold">Buying Price</th>
                         <th className="p-4 font-semibold">Selling Price</th>
                         <th className="p-4 font-semibold">Stock</th>
-                        <th className="p-4 font-semibold">Actions</th>
+                        {canModify && <th className="p-4 font-semibold">Actions</th>}
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -49,22 +49,24 @@ function ProductsTable({ products, onEdit, onDelete }) {
                                         {product.stock_quantity} {product.unit || 'units'}
                                     </span>
                                 </td>
-                                <td className="p-4">
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={() => onEdit(product)}
-                                            className="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors cursor-pointer"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(product.product_id)}
-                                            className="text-red-600 hover:text-red-700 font-semibold text-sm transition-colors cursor-pointer"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
+                                {canModify && (
+                                    <td className="p-4">
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => onEdit(product)}
+                                                className="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors cursor-pointer"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => onDelete(product.product_id)}
+                                                className="text-red-600 hover:text-red-700 font-semibold text-sm transition-colors cursor-pointer"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                )}
                             </tr>
                         );
                     })}

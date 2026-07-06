@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Search, Plus, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 import ProductsTable from "../components/products/ProductsTable";
 import ProductModal from "../components/products/ProductModal";
@@ -19,6 +20,8 @@ import {
 } from "../api/categoriesApi";
 
 function ProductsPage() {
+    const { user } = useAuth();
+    const canModify = user?.role !== "cashier";
 
     const [products, setProducts] =
         useState([]);
@@ -173,25 +176,27 @@ function ProductsPage() {
                     <p className="text-gray-500 mt-1">Manage products and categories</p>
                 </div>
 
-                <div className="flex gap-3">
-                    <button
-                        onClick={() => setShowCategoryModal(true)}
-                        className="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg border border-gray-300 font-semibold text-sm transition-colors cursor-pointer shadow-sm"
-                    >
-                        Categories
-                    </button>
+                {canModify && (
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowCategoryModal(true)}
+                            className="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg border border-gray-300 font-semibold text-sm transition-colors cursor-pointer shadow-sm"
+                        >
+                            Categories
+                        </button>
 
-                    <button
-                        onClick={() => {
-                            setEditingProduct(null);
-                            setShowProductModal(true);
-                        }}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors cursor-pointer shadow-sm"
-                    >
-                        <Plus className="h-5 w-5" />
-                        <span>Add Product</span>
-                    </button>
-                </div>
+                        <button
+                            onClick={() => {
+                                setEditingProduct(null);
+                                setShowProductModal(true);
+                            }}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors cursor-pointer shadow-sm"
+                        >
+                            <Plus className="h-5 w-5" />
+                            <span>Add Product</span>
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Search Section */}
@@ -216,6 +221,7 @@ function ProductsPage() {
 
             <ProductsTable
                 products={products}
+                canModify={canModify}
                 onEdit={(product) => {
                     setEditingProduct(product);
                     setShowProductModal(true);
