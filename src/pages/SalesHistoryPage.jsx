@@ -233,7 +233,7 @@ function SalesHistoryPage() {
                                             {sale.items_count} {Number(sale.items_count) === 1 ? "item" : "items"}
                                         </td>
                                         <td className="p-4 text-right font-bold text-gray-900">
-                                            KES {Number(sale.total || sale.total_amount || 0).toLocaleString()}
+                                            KES {Number(sale.total ||  0).toLocaleString()}
                                         </td>
                                         <td className="p-4">
                                             <span className={getPaymentBadgeClass(sale.payment_method)}>

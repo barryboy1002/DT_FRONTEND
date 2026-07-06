@@ -3,7 +3,7 @@ import api from "./axios";
 export async function getRecentSales(){
     const response =
         await api.get(
-            "/sales/recent"
+            "/sales?limit=10"
         );
 
     return response.data;
