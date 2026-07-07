@@ -24,7 +24,4 @@ export async function getSale(saleId) {
     return response.data;
 }
 
-export async function refundSale(saleId, reason) {
-    const response = await api.post(`/sales/${saleId}/refund`, { reason });
-    return response.data;
-}
+

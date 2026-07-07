@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, X, Eye, FileText, RotateCcw } from "lucide-react";
-import { getSales, getSale, refundSale } from "../api/salesApi";
+import { getSales, getSale } from "../api/salesApi";
 import { useAppSettings } from "../context/AppSettingsContext";
 
 function SalesHistoryPage() {
@@ -16,10 +16,7 @@ function SalesHistoryPage() {
     const [page, setPage] = useState(1);
     const [pageSize] = useState(10);
     const [meta, setMeta] = useState({ page: 1, limit: 10, total_pages: 1, total_items: 0 });
-    const [submittingRefund, setSubmittingRefund] = useState(false);
-    const [refundReason, setRefundReason] = useState("");
-
-    // Detail Modal State
+        // Detail Modal State
     const [selectedSale, setSelectedSale] = useState(null);
     const [saleDetails, setSaleDetails] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -89,23 +86,7 @@ function SalesHistoryPage() {
         }
     };
 
-    const handleRefund = async () => {
-        if (!selectedSale) return;
-        setSubmittingRefund(true);
-        try {
-            await refundSale(selectedSale.sale_id, refundReason.trim() || null);
-            setRefundReason("");
-            setShowDetailsModal(false);
-            await loadSalesList({ from, to, paymentMethod, search: debouncedSearch });
-            setSuccessMsg("Refund recorded successfully.");
-        } catch (err) {
-            console.error(err);
-            setErrorMsg(err?.response?.data?.error || "Could not create refund.");
-        } finally {
-            setSubmittingRefund(false);
-        }
-    };
-
+   
     // Calculate sum totals of the current visible page
     const totalAmountSum = sales.reduce((sum, item) => sum + Number(item.total || 0), 0);
 
@@ -416,19 +397,7 @@ function SalesHistoryPage() {
 
                         {/* Modal Footer */}
                         <div className="p-4 border-t border-gray-100 bg-gray-50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-                            <div className="flex-1">
-                                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Refund reason (optional)</label>
-                                <input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900" placeholder="Items damaged / change of mind" />
-                            </div>
-                            <button
-                                onClick={handleRefund}
-                                disabled={submittingRefund}
-                                className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                                <RotateCcw className="h-4 w-4" />
-                                {submittingRefund ? "Refunding..." : "Refund Sale"}
-                            </button>
-                            <button
+                                                        <button
                                 onClick={() => window.print()}
                                 className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium border border-gray-300 rounded-lg text-sm transition-colors cursor-pointer flex items-center gap-2"
                             >
