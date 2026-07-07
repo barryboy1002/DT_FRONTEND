@@ -325,7 +325,7 @@ function SalesHistoryPage() {
                             
                             {/* Receipt Header - Centered */}
                             <div className="text-center space-y-1 pb-4 border-b border-gray-200">
-                                <h2 className="text-2xl font-bold text-gray-900">DukaTrack</h2>
+                                <h2 className="text-2xl font-bold text-gray-900">Sh-Track</h2>
                                 <p className="text-sm text-gray-600">{formatDate(selectedSale?.date_time)}</p>
                                 <p className="text-sm text-gray-700">
                                     Receipt: <span className="font-mono font-bold">{saleDetails?.receipt_number || selectedSale?.receipt_number || `RCP-${selectedSale?.sale_id}`}</span>
@@ -391,7 +391,7 @@ function SalesHistoryPage() {
                             {/* Footer Messages */}
                             <div className="text-center space-y-2 pt-4 border-t border-gray-200">
                                 <p className="text-sm text-gray-600">Thank you for your business!</p>
-                                <p className="text-xs text-gray-400">Powered by DukaTrack</p>
+                                <p className="text-xs text-gray-400">Powered by Sh-Track</p>
                             </div>
                         </div>
 

@@ -54,7 +54,7 @@ function RegisterPage() {
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-slate-900">
-                        DukaTrack
+                        Sh-Track
                     </h1>
 
                     <p className="text-slate-500 mt-2">

@@ -79,7 +79,7 @@ function Sidebar() {
         <aside className="w-64 bg-slate-900 text-white">
             <div className="h-16 flex items-center px-6 border-b border-slate-700">
                 <h2 className="font-bold text-xl">
-                    DukaTrack
+                    Sh-Track
                 </h2>
             </div>
 

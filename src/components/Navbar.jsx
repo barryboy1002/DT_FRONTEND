@@ -8,7 +8,7 @@ function Navbar() {
         <header className="h-16 bg-white border-b flex items-center justify-between px-6">
             <div>
                 <h1 className="font-semibold text-lg">
-                    DukaTrack
+                    Sh-Track
                 </h1>
             </div>
 
