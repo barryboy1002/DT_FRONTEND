@@ -3,6 +3,7 @@ import { Search, Scan, Plus, Trash2, Smartphone, Banknote, Check, AlertTriangle,
 import { getProducts } from "../api/productsApi";
 import { createSale } from "../api/salesApi";
 import BarcodeScanner from "../components/BarcodeScanner";
+import MpesaPaymentModal from "../components/MpesaPaymentModal";
 
 function SalesPage() {
     const [products, setProducts] = useState([]);
@@ -15,10 +16,12 @@ function SalesPage() {
     const [discount, setDiscount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("cash"); // 'cash' or 'mpesa'
     const [customerName, setCustomerName] = useState("");
+    const [mpesaPhone, setMpesaPhone] = useState("");
     
     // UI state
     const [isCompleting, setIsCompleting] = useState(false);
     const [showScanModal, setShowScanModal] = useState(false);
+    const [showMpesaModal, setShowMpesaModal] = useState(false);
     const [saleSuccess, setSaleSuccess] = useState(null);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -108,6 +111,7 @@ function SalesPage() {
         setDiscount(0);
         setCustomerName("");
         setPaymentMethod("cash");
+        setMpesaPhone("");
         setErrorMsg("");
     };
 
@@ -115,23 +119,35 @@ function SalesPage() {
     const discountAmount = subtotal * (Number(discount) / 100);
     const total = subtotal - discountAmount;
 
+    const cartItemsPayload = () => cart.map(item => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        unit_price: Number(item.selling_price)
+    }));
+
     const handleCompleteSale = async () => {
         if (cart.length === 0) {
             setErrorMsg("Cart is empty.");
             return;
         }
-        
-        setIsCompleting(true);
+
         setErrorMsg("");
         setSaleSuccess(null);
-        
+
+        if (paymentMethod === "mpesa") {
+            const phoneDigits = mpesaPhone.replace(/\D/g, "");
+            if (phoneDigits.length < 9) {
+                setErrorMsg("Enter a valid M-Pesa phone number.");
+                return;
+            }
+            setShowMpesaModal(true);
+            return;
+        }
+
+        setIsCompleting(true);
         try {
             const payload = {
-                items: cart.map(item => ({
-                    product_id: item.product_id,
-                    quantity: item.quantity,
-                    unit_price: Number(item.selling_price)
-                })),
+                items: cartItemsPayload(),
                 payment_method: paymentMethod,
                 customer_name: customerName.trim() || "Walk-in customer"
             };
@@ -147,6 +163,17 @@ function SalesPage() {
         } finally {
             setIsCompleting(false);
         }
+    };
+
+    const handleMpesaSuccess = async (sale) => {
+        setShowMpesaModal(false);
+        setSaleSuccess(sale);
+        await loadData(debouncedSearch);
+        clearCart();
+    };
+
+    const handleMpesaModalClose = () => {
+        setShowMpesaModal(false);
     };
 
     return (
@@ -432,6 +459,20 @@ function SalesPage() {
                         </div>
                     </div>
 
+                    {/* M-Pesa Phone Number */}
+                    {paymentMethod === "mpesa" && (
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold text-gray-500 tracking-wider uppercase">Customer Phone Number</label>
+                            <input
+                                type="tel"
+                                placeholder="07XX XXX XXX"
+                                value={mpesaPhone}
+                                onChange={(e) => setMpesaPhone(e.target.value)}
+                                className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-950 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-10"
+                            />
+                        </div>
+                    )}
+
                     {/* Customer Name */}
                     <div className="space-y-2">
                         <label className="text-xs font-semibold text-gray-500 tracking-wider uppercase">Customer Name (Optional)</label>
@@ -486,6 +527,17 @@ function SalesPage() {
                         }, 100);
                     }}
                     onClose={() => setShowScanModal(false)}
+                />
+            )}
+
+            {/* M-Pesa Payment Modal */}
+            {showMpesaModal && (
+                <MpesaPaymentModal
+                    items={cartItemsPayload()}
+                    phone={mpesaPhone}
+                    customerName={customerName.trim() || "Walk-in customer"}
+                    onSuccess={handleMpesaSuccess}
+                    onClose={handleMpesaModalClose}
                 />
             )}
 
