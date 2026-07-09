@@ -31,7 +31,7 @@ function OnboardingWizard() {
         setSavingCategory(true);
         setCategoryError("");
         try {
-            await createCategory({ name: categoryName.trim() });
+            await createCategory(categoryName.trim());
             setCategoriesCreated((prev) => [...prev, categoryName.trim()]);
             setCategoryName("");
         } catch (err) {
