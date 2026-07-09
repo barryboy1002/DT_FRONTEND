@@ -117,7 +117,7 @@ function ProductsPage() {
             await loadData(debouncedSearch);
             setShowProductModal(false);
 
-            const created = res.data;
+            const created = res; // createProductController returns the raw product, not {success, data}
             setNewlyCreatedProduct({
                 product_id: created.product_id,
                 name: created.name || product.name
