@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import ProductsTable from "../components/products/ProductsTable";
 import ProductModal from "../components/products/ProductModal";
 import CategoryModal from "../components/products/CategoryModal";
+import PurchaseModal from "../components/PurchaseModal";
 
 import {
     getProducts,
@@ -43,6 +44,9 @@ function ProductsPage() {
     const [editingProduct,
         setEditingProduct] =
         useState(null);
+
+    const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+    const [newlyCreatedProduct, setNewlyCreatedProduct] = useState(null);
 
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -108,13 +112,32 @@ function ProductsPage() {
 
     async function handleCreateProduct(product) {
         try {
-            await createProduct(product);
+            const res = await createProduct(product);
             window.dispatchEvent(new CustomEvent("dukatrack:products-updated"));
             await loadData(debouncedSearch);
             setShowProductModal(false);
+
+            const created = res.data;
+            setNewlyCreatedProduct({
+                product_id: created.product_id,
+                name: created.name || product.name
+            });
+            setShowPurchaseModal(true);
         } catch (error) {
             throw error;
         }
+    }
+
+    async function handlePurchaseRecorded() {
+        setShowPurchaseModal(false);
+        setNewlyCreatedProduct(null);
+        // Stock levels changed — refresh the table
+        await loadData(debouncedSearch);
+    }
+
+    function handleSkipPurchase() {
+        setShowPurchaseModal(false);
+        setNewlyCreatedProduct(null);
     }
 
     async function handleUpdateProduct(product) {
@@ -249,6 +272,13 @@ function ProductsPage() {
                 onClose={() => setShowCategoryModal(false)}
                 onCreate={handleCreateCategory}
                 onDelete={handleDeleteCategory}
+            />
+
+            <PurchaseModal
+                isOpen={showPurchaseModal}
+                prefillProduct={newlyCreatedProduct}
+                onClose={handleSkipPurchase}
+                onSuccess={handlePurchaseRecorded}
             />
         </div>
     );

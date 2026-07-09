@@ -6,6 +6,7 @@ import {
 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import OnboardingWizard from "./pages/OnboardingWizard";
 
 import DashboardPage from "./pages/DashboardPage";
 import ProductsPage from "./pages/ProductsPage";
@@ -16,6 +17,7 @@ import SuppliersPage from "./pages/SuppliersPage";
 import ReportsPage from "./pages/ReportsPage";
 import BranchesPage from "./pages/BranchesPage";
 import StaffPage from "./pages/StaffPage";
+import SettingsPage from "./pages/SettingsPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RequireRole from "./routes/RequireRole";
@@ -33,6 +35,15 @@ function App() {
                 <Route
                     path="/register"
                     element={<RegisterPage />}
+                />
+
+                <Route
+                    path="/onboarding"
+                    element={
+                        <ProtectedRoute>
+                            <OnboardingWizard />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
@@ -96,6 +107,15 @@ function App() {
                         element={
                             <RequireRole allowedRoles={["owner"]}>
                                 <StaffPage />
+                            </RequireRole>
+                        }
+                    />
+
+                    <Route
+                        path="settings"
+                        element={
+                            <RequireRole allowedRoles={["owner"]}>
+                                <SettingsPage />
                             </RequireRole>
                         }
                     />

@@ -41,7 +41,7 @@ function RegisterPage() {
             // Auto-login after successful registration
             const { token, user } = response.data.data;
             login(token, user);
-            navigate("/");
+            navigate("/onboarding");
         } catch (error) {
             setError(error.userMessage || "Registration failed");
         } finally {
