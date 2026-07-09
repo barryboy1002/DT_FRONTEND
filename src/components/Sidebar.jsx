@@ -6,7 +6,8 @@ import {
     Users,
     History,
     FileText,
-    Building
+    Building,
+    Settings
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -60,6 +61,11 @@ function Sidebar() {
             name: "Staff",
             path: "/staff",
             icon: Users
+        },
+        {
+            name: "Settings",
+            path: "/settings",
+            icon: Settings
         }
     ];
 
@@ -69,7 +75,7 @@ function Sidebar() {
         }
 
         if (user?.role === "manager") {
-            return !["/reports", "/branches", "/staff"].includes(link.path);
+            return !["/reports", "/branches", "/staff", "/settings"].includes(link.path);
         }
 
         return true;
