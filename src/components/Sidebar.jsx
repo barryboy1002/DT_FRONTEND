@@ -7,7 +7,9 @@ import {
     History,
     FileText,
     Building,
-    Settings
+    Settings,
+    Info,
+    Mail
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -66,12 +68,22 @@ function Sidebar() {
             name: "Settings",
             path: "/settings",
             icon: Settings
+        },
+        {
+            name: "About",
+            path: "/about",
+            icon: Info
+        },
+        {
+            name: "Contact",
+            path: "/contact",
+            icon: Mail
         }
     ];
 
     const filteredLinks = links.filter((link) => {
         if (user?.role === "cashier") {
-            return ["/", "/products", "/sales", "/sales-history"].includes(link.path);
+            return ["/", "/products", "/sales", "/sales-history", "/about", "/contact"].includes(link.path);
         }
 
         if (user?.role === "manager") {
