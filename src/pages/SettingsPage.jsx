@@ -110,7 +110,7 @@ function SettingsPage() {
                     <div>
                         <h2 className="text-xl font-semibold text-gray-900">M-Pesa Payments</h2>
                         <p className="text-sm text-gray-500 mt-1">
-                            Connect your Paybill or Till number to accept M-Pesa payments directly in DukaTrack.
+                            Connect your Paybill or Till number to accept M-Pesa payments directly in Shack.
                             Don't have one yet? You can skip this — cash sales work fine without it.
                         </p>
                     </div>

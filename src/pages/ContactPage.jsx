@@ -39,7 +39,7 @@ function ContactPage() {
             </div>
 
             <p className="text-center text-sm text-slate-400">
-                DukaTrack is actively being built — your feedback helps shape what comes next.
+                Shack is actively being built — your feedback helps shape what comes next.
             </p>
         </div>
     );

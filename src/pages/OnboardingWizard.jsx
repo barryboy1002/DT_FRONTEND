@@ -78,7 +78,7 @@ function OnboardingWizard() {
 
                 {step === "welcome" && (
                     <div className="text-center space-y-4">
-                        <h1 className="text-2xl font-bold text-slate-900">Welcome to DukaTrack 🎉</h1>
+                        <h1 className="text-2xl font-bold text-slate-900">Welcome to Shack 🎉</h1>
                         <p className="text-slate-500">
                             Let's get your shop set up. It'll only take a minute — we'll add a category
                             and a supplier so you're ready to add your first products.

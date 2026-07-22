@@ -9,7 +9,8 @@ import {
     Building,
     Settings,
     Info,
-    Mail
+    Mail,
+    Store
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -95,9 +96,10 @@ function Sidebar() {
 
     return (
         <aside className="w-64 bg-slate-900 text-white">
-            <div className="h-16 flex items-center px-6 border-b border-slate-700">
-                <h2 className="font-bold text-xl">
-                    DukaTrack
+            <div className="h-16 flex items-center gap-3 px-6 border-b border-slate-700">
+                <Store className="h-6 w-6 text-blue-400" />
+                <h2 className="font-bold text-xl tracking-wide">
+                    Shack
                 </h2>
             </div>
 

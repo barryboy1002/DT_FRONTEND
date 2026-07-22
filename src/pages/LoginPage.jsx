@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Store } from "lucide-react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -50,8 +51,11 @@ function LoginPage() {
         <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
                 <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-blue-100 text-blue-600 mb-3">
+                        <Store className="h-7 w-7" />
+                    </div>
                     <h1 className="text-4xl font-bold text-slate-900">
-                        DukaTrack
+                        Shack
                     </h1>
 
                     <p className="text-slate-500 mt-2">

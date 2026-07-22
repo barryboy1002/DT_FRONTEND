@@ -5,16 +5,16 @@ function AboutPage() {
     return (
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 md:p-12 space-y-8">
             <div className="text-center space-y-3">
-                <h1 className="text-4xl font-bold text-slate-900">About DukaTrack</h1>
+                <h1 className="text-4xl font-bold text-slate-900">About Shack</h1>
                 <p className="text-slate-500 text-lg">
-                    Shop management built for the way Kenyan dukas actually run.
+                    Shop management built for the way local shops actually run.
                 </p>
             </div>
 
             <p className="text-slate-600 leading-relaxed">
-                DukaTrack helps duka owners keep track of stock, sales, purchases, and staff —
+                Shack helps shop owners keep track of stock, sales, purchases, and staff —
                 without needing a computer science degree to set it up. Whether you run a single
-                shop or a few branches, DukaTrack keeps your numbers straight so you can focus on
+                shop or a few branches, Shack keeps your numbers straight so you can focus on
                 running the business.
             </p>
 
