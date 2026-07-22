@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Search, Scan, Plus, Trash2, Smartphone, Banknote, Check, AlertTriangle, X, ShoppingCart, Percent } from "lucide-react";
+import { Search, Scan, Plus, Trash2, Smartphone, Banknote, Check, AlertTriangle, X, ShoppingCart, Percent, Info } from "lucide-react";
 import { getProducts } from "../api/productsApi";
 import { createSale } from "../api/salesApi";
+import { getMpesaSettings } from "../api/businessesApi";
 import BarcodeScanner from "../components/BarcodeScanner";
 import MpesaPaymentModal from "../components/MpesaPaymentModal";
 
@@ -10,6 +11,7 @@ function SalesPage() {
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [mpesaSettings, setMpesaSettings] = useState(null);
     
     // Cart state
     const [cart, setCart] = useState([]);
@@ -24,6 +26,20 @@ function SalesPage() {
     const [showMpesaModal, setShowMpesaModal] = useState(false);
     const [saleSuccess, setSaleSuccess] = useState(null);
     const [errorMsg, setErrorMsg] = useState("");
+
+    useEffect(() => {
+        async function fetchSettings() {
+            try {
+                const res = await getMpesaSettings();
+                if (res?.data) {
+                    setMpesaSettings(res.data);
+                }
+            } catch (err) {
+                // Ignore silent failure if settings can't be fetched
+            }
+        }
+        fetchSettings();
+    }, []);
 
     async function loadData(term = "") {
         setLoading(true);
@@ -459,17 +475,30 @@ function SalesPage() {
                         </div>
                     </div>
 
-                    {/* M-Pesa Phone Number */}
+                    {/* M-Pesa Phone Number & Paybill info */}
                     {paymentMethod === "mpesa" && (
-                        <div className="space-y-2">
-                            <label className="text-xs font-semibold text-gray-500 tracking-wider uppercase">Customer Phone Number</label>
-                            <input
-                                type="tel"
-                                placeholder="07XX XXX XXX"
-                                value={mpesaPhone}
-                                onChange={(e) => setMpesaPhone(e.target.value)}
-                                className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-950 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-10"
-                            />
+                        <div className="space-y-3">
+                            {mpesaSettings?.mpesa_enabled && mpesaSettings?.mpesa_shortcode ? (
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-xs text-blue-800 flex items-center justify-between">
+                                    <span className="font-semibold">Paybill / Shortcode:</span>
+                                    <span className="font-mono font-bold bg-blue-100 px-2 py-0.5 rounded text-blue-900">{mpesaSettings.mpesa_shortcode}</span>
+                                </div>
+                            ) : (
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-800 flex items-start gap-2">
+                                    <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                                    <span>M-Pesa is not enabled for this business yet. Configure your Paybill in <strong>Settings</strong>.</span>
+                                </div>
+                            )}
+                            <div>
+                                <label className="text-xs font-semibold text-gray-500 tracking-wider uppercase">Customer Phone Number</label>
+                                <input
+                                    type="tel"
+                                    placeholder="07XX XXX XXX"
+                                    value={mpesaPhone}
+                                    onChange={(e) => setMpesaPhone(e.target.value)}
+                                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-950 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors h-10 mt-1"
+                                />
+                            </div>
                         </div>
                     )}
 

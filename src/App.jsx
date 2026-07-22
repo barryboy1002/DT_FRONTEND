@@ -40,16 +40,6 @@ function App() {
                 />
 
                 <Route
-                    path="/about"
-                    element={<AboutPage />}
-                />
-
-                <Route
-                    path="/contact"
-                    element={<ContactPage />}
-                />
-
-                <Route
                     path="/onboarding"
                     element={
                         <ProtectedRoute>
@@ -130,6 +120,16 @@ function App() {
                                 <SettingsPage />
                             </RequireRole>
                         }
+                    />
+
+                    <Route
+                        path="about"
+                        element={<AboutPage />}
+                    />
+
+                    <Route
+                        path="contact"
+                        element={<ContactPage />}
                     />
                 </Route>
             </Routes>
